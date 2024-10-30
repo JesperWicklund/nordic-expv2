@@ -1,17 +1,9 @@
+// app/layout.tsx (or pages/_app.tsx if using Pages Router)
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
+import Navbar from "../components/mobile/Navbar";
+import { UserProvider } from "../context/UserContext"; // Import the UserProvider
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -25,10 +17,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
+      <body>
+        <UserProvider> {/* Wrap children with UserProvider */}
+          {children}
+          <Navbar />
+        </UserProvider>
       </body>
     </html>
   );
