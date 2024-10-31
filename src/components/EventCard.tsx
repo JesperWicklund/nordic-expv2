@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import React from 'react';
 
-interface EventCardProps {
+export interface EventCardProps {
   event: {
     id: string;
     title: string;
@@ -18,12 +18,12 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
   return (
     <Link 
       href={`/event/${event.id}`} 
-      className="relative max-w-sm border rounded-lg overflow-hidden shadow-lg mx-auto flex flex-col mb-4"
+      className="relative sm:w-full    flex flex-col mb-4" // Set a fixed width here
     >
-      <div className="relative">
+      <div className="relative flex-shrink-0"> 
         {/* Category tag positioned at the top-right corner */}
         {event.category && (
-          <span className="capitalize absolute top-2 right-2 bg-[#DE8022] bg-opacity-70 text-white text-xs font-bold py-1 px-4 rounded-xl">
+          <span className="capitalize absolute top-2 right-2 bg-[#DE8022]  text-white text-xs font-bold py-1 px-4 rounded-xl">
             {event.category}
           </span>
         )}
@@ -33,12 +33,12 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
           <img
             src={event.images[0]}
             alt={event.title}
-            className="w-full h-48 object-cover"
+            className="w-full h-64 object-cover rounded-xl" // Fixed height for images
           />
         )}
       </div>
 
-      <div className="p-4">
+      <div className="p-4 flex-grow"> {/* Use flex-grow to ensure this part takes up the remaining space */}
         <h3 className="text-lg font-semibold">{event.title}</h3>
         <p className="text-gray-700 text-sm mt-2">{event.description}</p>
         <p className="text-gray-500 text-xs mt-2">

@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import Navbar from "../components/mobile/Navbar";
 import { UserProvider } from "../context/UserContext"; // Import the UserProvider
+import Header from "@/components/desktop/Header";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -19,7 +20,11 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <UserProvider> {/* Wrap children with UserProvider */}
+          <Header />
+          <div className="sm:mt-24">
+
           {children}
+          </div>
           <Navbar />
         </UserProvider>
       </body>
