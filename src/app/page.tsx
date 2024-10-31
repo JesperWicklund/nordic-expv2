@@ -1,7 +1,12 @@
+import EventsList from '@/components/EventList'
+import Header from '@/components/mobile/Header'
 import React from 'react'
 
-export default function page() {
+export default function home() {
   return (
-    <div>page</div>
+    <div>
+      <Header />
+      <EventsList />
+    </div>
   )
 }
