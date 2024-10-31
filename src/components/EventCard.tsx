@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import React from 'react';
 
 interface EventCardProps {
@@ -15,7 +16,10 @@ interface EventCardProps {
 
 const EventCard: React.FC<EventCardProps> = ({ event }) => {
   return (
-    <div className="relative max-w-sm border rounded-lg overflow-hidden shadow-lg mx-auto">
+    <Link 
+      href={`/event/${event.id}`} 
+      className="relative max-w-sm border rounded-lg overflow-hidden shadow-lg mx-auto flex flex-col mb-4"
+    >
       <div className="relative">
         {/* Category tag positioned at the top-right corner */}
         {event.category && (
@@ -41,7 +45,7 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
           {new Date(event.date).toLocaleDateString()}
         </p>
       </div>
-    </div>
+    </Link>
   );
 };
 

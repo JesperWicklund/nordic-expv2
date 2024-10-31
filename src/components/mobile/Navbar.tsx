@@ -14,7 +14,7 @@ export default function MobileNav() {
       <div className="flex justify-between items-center mx-4">
         <a href="/" className="flex flex-col justify-center items-center">
           {/* Add icon or text here for home */}
-          Home
+          Packages
         </a>
         <a href="/housing" className="flex flex-col justify-center items-center">
           {/* Add icon or text here for housing */}
