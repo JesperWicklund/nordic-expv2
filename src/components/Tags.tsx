@@ -1,29 +1,31 @@
 'use client';
-import React, { useState } from 'react';
+import React from 'react';
 
 const categories = [
   'All',
-  'Health & Fitness',
-  'Fashion',
+  'Music',
+  'Food',
   'Education',
   'Travel',
-  'Food & Drinks',
+  'Science',
   'Sports',
   'Art',
 ];
 
-export default function Tags() {
-  // State to track the selected category
-  const [selectedCategory, setSelectedCategory] = useState<string>('All');
+interface TagsProps {
+  selectedCategory: string; // Current selected category
+  setSelectedCategory: (category: string) => void; // Function to update the selected category
+}
 
+export default function Tags({ selectedCategory, setSelectedCategory }: TagsProps) {
   return (
-    <div className="p-4 mt-4 sm:flex sm:flex-wrap ">
+    <div className="p-4 mt-4 sm:flex sm:flex-wrap">
       <div className="overflow-x-auto hide-scrollbar">
-        <div className="whitespace-nowrap  flex items-center sm:flex-wrap sm:gap-y-4 space-x-4 space-y-2 sm:space-y-0"> {/* Adjust space for wrapping */}
+        <div className="whitespace-nowrap flex items-center sm:flex-wrap sm:gap-y-4 space-x-4  ">
           {categories.map((category, index) => (
             <div
               key={index}
-              onClick={() => setSelectedCategory(category)} // Set the selected category on click
+              onClick={() => setSelectedCategory(category)} // Update selected category on click
               className={`inline-block px-6 py-1 rounded-full cursor-pointer transition duration-300 
                 ${selectedCategory === category 
                   ? 'bg-[#DE8022] text-white font-semibold'  // Active state (orange bg, white text)
