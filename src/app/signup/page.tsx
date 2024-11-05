@@ -52,25 +52,38 @@ const SignUp: React.FC = () => {
     };
 
     return (
-        <div>
-            <h2>Sign Up</h2>
-            <input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-            />
-            <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-            />
-            <button onClick={handleSignUp} disabled={isLoading}>
-                {isLoading ? "Signing Up..." : "Sign Up"}
-            </button>
-            <p>{message}</p>
-        </div>
+        <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
+  <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">Sign Up</h2>
+
+  <input
+    type="email"
+    placeholder="Email"
+    value={email}
+    onChange={(e) => setEmail(e.target.value)}
+    className="w-full p-3 mb-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+  />
+
+  <input
+    type="password"
+    placeholder="Password"
+    value={password}
+    onChange={(e) => setPassword(e.target.value)}
+    className="w-full p-3 mb-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+  />
+
+  <button 
+    onClick={handleSignUp} 
+    disabled={isLoading}
+    className={`w-full bg-blue-600 text-white font-semibold py-2 rounded-lg 
+                ${isLoading ? 'cursor-not-allowed opacity-50' : 'hover:bg-blue-700'} 
+                transition duration-300`}
+  >
+    {isLoading ? "Signing Up..." : "Sign Up"}
+  </button>
+
+  {message && <p className="mt-4 text-red-500 text-center">{message}</p>}
+</div>
+
     );
 };
 
