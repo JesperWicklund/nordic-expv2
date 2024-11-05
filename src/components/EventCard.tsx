@@ -10,6 +10,7 @@ export interface EventCardProps {
     images: string[];
     date: string;
     category: string;
+    country: string;
     // Add other event fields as needed
   };
 }

@@ -3,17 +3,20 @@ import React, { useState } from 'react';
 import EventsList from '@/components/EventList';
 import Header from '@/components/mobile/Header';
 import Tags from '@/components/Tags';
+import CountryDropdown from '@/components/mobile/CountryDropDown'; 
 
 export default function Home() {
-  // State to track the selected category
-  const [selectedCategory, setSelectedCategory] = useState<string>('All'); 
+  // State to track the selected category and country
+  const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [selectedCountry, setSelectedCountry] = useState<string>('All'); // State for selected country
 
   return (
     <div>
       <Header />
-      <Tags selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} /> {/* Pass state and setter */}
+      <CountryDropdown selectedCountry={selectedCountry} setSelectedCountry={setSelectedCountry} /> {/* Dropdown for country */}
+      <Tags selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} />
       <div className='p-4'>
-        <EventsList selectedCategory={selectedCategory} /> {/* Pass selected category to EventsList */}
+        <EventsList selectedCategory={selectedCategory} selectedCountry={selectedCountry} /> {/* Pass selected country to EventsList */}
       </div>
     </div>
   );

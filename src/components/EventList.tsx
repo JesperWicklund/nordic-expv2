@@ -5,9 +5,10 @@ import EventCard, { EventCardProps } from './EventCard';
 
 interface EventsListProps {
   selectedCategory: string; // Accept selected category as a prop
+  selectedCountry: string; // Accept selected country as a prop
 }
 
-export default function EventsList({ selectedCategory }: EventsListProps) {
+export default function EventsList({ selectedCategory, selectedCountry }: EventsListProps) {
   const [events, setEvents] = useState<EventCardProps['event'][]>([]);
   const [loading, setLoading] = useState(true); // Loading state
 
@@ -22,10 +23,12 @@ export default function EventsList({ selectedCategory }: EventsListProps) {
     getEvents();
   }, []);
 
-  // Filter events based on selected category
-  const filteredEvents = selectedCategory === 'All' 
-    ? events 
-    : events.filter(event => event.category === selectedCategory);
+  // Filter events based on selected category and country
+  const filteredEvents = events.filter(event => {
+    const matchesCategory = selectedCategory === 'All' || event.category === selectedCategory;
+    const matchesCountry = selectedCountry === 'All' || event.country === selectedCountry; // Filter by country
+    return matchesCategory && matchesCountry; // Return events that match both filters
+  });
 
   return (
     <div className="flex flex-col items-center">
