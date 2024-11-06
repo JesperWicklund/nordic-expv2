@@ -9,7 +9,7 @@ const countries = [
   'Norway',
 ];
 
-interface CountryDropdownProps {
+type CountryDropdownProps = {
   selectedCountry: string; // Current selected country
   setSelectedCountry: (country: string) => void; // Function to update the selected country
 }

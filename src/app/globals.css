@@ -2,19 +2,27 @@
 @tailwind components;
 @tailwind utilities;
 
+/* styles/globals.css */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Apply the loader styles */
 .loader {
-    border-top-color: #DE8022;
-    animation: spin 1s ease-in-out infinite;
-  }
-  
-  @keyframes spin {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
-  }
+  border-top: 4px solid transparent;
+  border-right: 4px solid #DE8022; /* Orange color */
+  border-bottom: 4px solid transparent;
+  border-left: 4px solid #DE8022; /* Orange color */
+  border-radius: 50%;
+  width: 3rem; /* Size of the spinner */
+  height: 3rem; /* Size of the spinner */
+  animation: spin 1s linear infinite; /* Spin animation */
+}
 
   /* globals.css */
 .hide-scrollbar::-webkit-scrollbar {

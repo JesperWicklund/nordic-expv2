@@ -1,41 +1,38 @@
-'use client';
 import React, { useEffect, useState } from 'react';
 import { fetchEvents } from '@/lib/fetchEvents'; 
 import EventCard, { EventCardProps } from './EventCard'; 
+import Loader from './Loader';
 
-interface EventsListProps {
-  selectedCategory: string; // Accept selected category as a prop
-  selectedCountry: string; // Accept selected country as a prop
+type EventsListProps = {
+  selectedCategory: string;
+  selectedCountry: string;
 }
 
 export default function EventsList({ selectedCategory, selectedCountry }: EventsListProps) {
   const [events, setEvents] = useState<EventCardProps['event'][]>([]);
-  const [loading, setLoading] = useState(true); // Loading state
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const getEvents = async () => {
-      setLoading(true); // Start loading
+      setLoading(true);
       const eventsData = await fetchEvents();
       setEvents(eventsData);
-      setLoading(false); // End loading
+      setLoading(false);
     };
 
     getEvents();
   }, []);
 
-  // Filter events based on selected category and country
   const filteredEvents = events.filter(event => {
     const matchesCategory = selectedCategory === 'All' || event.category === selectedCategory;
-    const matchesCountry = selectedCountry === 'All' || event.country === selectedCountry; // Filter by country
-    return matchesCategory && matchesCountry; // Return events that match both filters
+    const matchesCountry = selectedCountry === 'All' || event.country === selectedCountry;
+    return matchesCategory && matchesCountry;
   });
 
   return (
     <div className="flex flex-col items-center">
-      {loading ? ( // Show loader while loading
-        <div className="flex justify-center items-center h-48">
-          <div className="loader border-t-transparent border-solid border-[#DE8022] border-4 rounded-full w-12 h-12 animate-spin"></div>
-        </div>
+      {loading ? (
+        <Loader />
       ) : filteredEvents.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full max-w-screen-lg">
           {filteredEvents.map((event) => (
