@@ -13,7 +13,16 @@ export default function Home() {
   return (
     <div>
       <Header />
-      <CountryDropdown selectedCountry={selectedCountry} setSelectedCountry={setSelectedCountry} /> {/* Dropdown for country */}
+      <CountryDropdown selectedCountry={selectedCountry} setSelectedCountry={setSelectedCountry} />
+      <div className="mt-8 flex flex-col justify-center items-center">
+        <div>
+          <h1 className="font-bold text-xl">Packages</h1>
+        </div>
+        <div>
+          <p className="font-light">Ready to go travel packages</p>
+        </div>
+        <button className="text-[#DE8022] font-semibold">Learn more</button>
+      </div> {/* Dropdown for country */}
       <Tags selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} />
       <div className='p-4'>
         <EventsList selectedCategory={selectedCategory} selectedCountry={selectedCountry} /> {/* Pass selected country to EventsList */}

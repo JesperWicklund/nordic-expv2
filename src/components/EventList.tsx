@@ -16,7 +16,11 @@ export default function EventsList({ selectedCategory, selectedCountry }: Events
     const getEvents = async () => {
       setLoading(true);
       const eventsData = await fetchEvents();
-      setEvents(eventsData);
+
+      // Sort events by date (assuming `event.date` exists and is a valid date string)
+      const sortedEvents = eventsData.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+      setEvents(sortedEvents);
       setLoading(false);
     };
 
@@ -30,7 +34,7 @@ export default function EventsList({ selectedCategory, selectedCountry }: Events
   });
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center mb-20">
       {loading ? (
         <Loader />
       ) : filteredEvents.length > 0 ? (

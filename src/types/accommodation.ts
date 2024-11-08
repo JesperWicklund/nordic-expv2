@@ -1,5 +1,5 @@
 // types/accommodation.ts
-export type Accommodation = {
+export type Accommodation ={
     id: number;
     name: string;
     description: string;

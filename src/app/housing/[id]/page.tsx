@@ -65,7 +65,7 @@ const AccommodationDetail: React.FC = () => {
         <p className="text-gray-800 mb-6">{accommodation.description}</p>
         <div className="flex justify-between items-center">
           <span className="text-lg font-semibold text-[#DE8022]">
-            ${accommodation.price.toFixed(2)}
+            ${accommodation.price}
           </span>
         </div>
       </div>
