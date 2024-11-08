@@ -1,34 +1,35 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation'; // Use useParams from next/navigation
-import { supabase } from '../../../../lib/supabaseClient'; // Supabase client
-import { Accommodation } from '@/types/accommodation'; // Define accommodation type
+import { useParams } from 'next/navigation';
+import { supabase } from '../../../../lib/supabaseClient';
+import { Accommodation } from '@/types/accommodation';
+import { useCart } from '@/context/CartContext'; // Import useCart for adding to the cart
 import Link from 'next/link';
 
 const AccommodationDetail: React.FC = () => {
   const { id } = useParams(); // Get the dynamic `id` from URL using `useParams`
+  const { addToCart } = useCart(); // Access the addToCart function
 
   const [accommodation, setAccommodation] = useState<Accommodation | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch accommodation data based on `id`
   useEffect(() => {
-    if (!id) return; // Don't fetch data if `id` is undefined
+    if (!id) return;
 
     const fetchAccommodation = async () => {
       try {
         const { data, error } = await supabase
-          .from('accommodations') // Supabase table name
-          .select('*') // Select all columns
-          .eq('id', id) // Filter by the dynamic `id`
-          .single(); // Expecting a single result
+          .from('accommodations')
+          .select('*')
+          .eq('id', id)
+          .single();
 
         if (error) {
           setError(error.message);
         } else {
-          setAccommodation(data); // Set fetched data to state
+          setAccommodation(data);
         }
       } catch (err) {
         setError('Failed to load accommodation details');
@@ -38,18 +39,18 @@ const AccommodationDetail: React.FC = () => {
     };
 
     fetchAccommodation();
-  }, [id]); // Dependency on `id` to refetch when it changes
+  }, [id]);
 
   if (loading) {
-    return <div>Loading...</div>; // Loading state
+    return <div>Loading...</div>;
   }
 
   if (error) {
-    return <div>{error}</div>; // Error state
+    return <div>{error}</div>;
   }
 
   if (!accommodation) {
-    return <div>No accommodation found</div>; // If no accommodation data is found
+    return <div>No accommodation found</div>;
   }
 
   return (
@@ -67,6 +68,14 @@ const AccommodationDetail: React.FC = () => {
           <span className="text-lg font-semibold text-[#DE8022]">
             ${accommodation.price}
           </span>
+
+          {/* Button to add to cart */}
+          <button
+            onClick={() => addToCart(accommodation)} // Add the accommodation to the cart
+            className="px-4 py-2 bg-[#DE8022] text-white rounded hover:bg-[#c46f1b]"
+          >
+            Add to Cart
+          </button>
         </div>
       </div>
     </div>

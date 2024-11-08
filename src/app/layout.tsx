@@ -3,8 +3,9 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import Navbar from "../components/mobile/Navbar";
-import { UserProvider } from "../context/UserContext"; // Import the UserProvider
+import { UserProvider } from "../context/UserContext";
 import Header from "@/components/desktop/Header";
+import { CartProvider } from "@/context/CartContext";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -19,13 +20,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <UserProvider> {/* Wrap children with UserProvider */}
-          <Header />
-          <div className="sm:mt-24">
-
-          {children}
-          </div>
-          <Navbar />
+        <UserProvider>
+          <CartProvider>
+            <Header />
+            <div className="sm:mt-24">{children}</div>
+            <Navbar />
+          </CartProvider>
         </UserProvider>
       </body>
     </html>

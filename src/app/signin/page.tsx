@@ -20,9 +20,9 @@ const SignIn: React.FC = () => {
       setMessage(`Error: ${error.message}`);
     } else {
       // Successfully signed in
-      setMessage('Signed in successfully! Redirecting to events...');
+      setMessage('Signed in successfully! ');
       // Redirect to /event page after successful sign-in
-      router.push('/event');
+      router.push('/profile');
     }
   };
 
@@ -53,7 +53,7 @@ const SignIn: React.FC = () => {
     Sign In
   </button>
   
-  {message && <p className="mt-4 text-red-500 text-center">{message}</p>}
+  {message && <p className="mt-4 font-bold text-center">{message}</p>}
   
   <p className="mt-4 text-center">
     <a href="/signup" className="text-blue-600 hover:underline">

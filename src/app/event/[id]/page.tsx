@@ -1,56 +1,52 @@
-"use client";
-
+'use client'; 
 import React, { useEffect, useState } from "react";
-import { useParams } from "next/navigation"; // Use useParams from next/navigation
-import { supabase } from "../../../../lib/supabaseClient"; // Supabase client
+import { useParams } from "next/navigation";
+import { supabase } from "../../../../lib/supabaseClient";
 import { Event } from "@/types/event";
 import Link from "next/link";
+import { useCart } from "@/context/CartContext";
+import { useUser } from "@/context/UserContext";
 
-const AccommodationDetail: React.FC = () => {
-  const { id } = useParams(); // Get the dynamic `id` from URL using `useParams`
+const EventDetail: React.FC = () => {
+  const { id } = useParams(); // Get the event id from URL parameters
+  const { addToCart } = useCart(); // Access cart context
+  const { user } = useUser(); // Access user from UserContext
 
+  // State for the event data and loading/error state
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch accommodation data based on `id`
+  // Fetch event details based on the event id from URL
   useEffect(() => {
-    if (!id) return; // Don't fetch data if `id` is undefined
+    if (!id) return; // If no id, do not proceed
 
     const fetchEvent = async () => {
       try {
         const { data, error } = await supabase
-          .from("events") // Supabase table name
-          .select("*") // Select all columns
-          .eq("id", id) // Filter by the dynamic `id`
-          .single(); // Expecting a single result
+          .from("events")
+          .select("*")
+          .eq("id", id)
+          .single(); // Fetch a single event by ID
 
         if (error) {
-          setError(error.message);
+          setError(error.message); // Set error message if query fails
         } else {
-          setEvent(data); // Set fetched data to state
+          setEvent(data); // Set event data if successful
         }
       } catch (err) {
-        setError("Failed to load event details");
+        setError("Failed to load event details"); // Catch unexpected errors
       } finally {
-        setLoading(false);
+        setLoading(false); // End loading state
       }
     };
 
     fetchEvent();
-  }, [id]); // Dependency on `id` to refetch when it changes
+  }, [id]); // Fetch data when id changes (on mount or URL change)
 
-  if (loading) {
-    return <div>Loading...</div>; // Loading state
-  }
-
-  if (error) {
-    return <div>{error}</div>; // Error state
-  }
-
-  if (!event) {
-    return <div>No event found</div>; // If no accommodation data is found
-  }
+  if (loading) return <div>Loading...</div>; // Show loading state
+  if (error) return <div>{error}</div>; // Show error state
+  if (!event) return <div>No event found</div>; // Show if no event found
 
   return (
     <div className="max-w-4xl mx-auto p-4">
@@ -67,10 +63,24 @@ const AccommodationDetail: React.FC = () => {
           <span className="text-lg font-semibold text-[#DE8022]">
             {event.price.toLowerCase() === "free" ? "Free" : `$${event.price}`}
           </span>
+
+          {/* Conditionally render the Add to Cart button based on login status */}
+          {user ? (
+            <button
+              onClick={() => addToCart(event)} // Add event to cart when clicked
+              className="px-4 py-2 bg-[#DE8022] text-white rounded hover:bg-[#c46f1b]"
+            >
+              Add to Cart
+            </button>
+          ) : (
+            <Link href="/login" className="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500">
+              Log in to add to cart
+            </Link>
+          )}
         </div>
       </div>
     </div>
   );
 };
 
-export default AccommodationDetail;
+export default EventDetail;
