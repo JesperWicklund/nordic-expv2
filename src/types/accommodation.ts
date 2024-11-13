@@ -5,6 +5,8 @@ export type Accommodation ={
     description: string;
     location: string;
     price: number;
+    images: string[];
+    date: string;
     // Add other fields as needed
   }
   

@@ -5,6 +5,7 @@ import Header from '@/components/mobile/Header';
 import Tags from '@/components/Tags';
 import CountryDropdown from '@/components/mobile/CountryDropDown'; 
 
+
 export default function Home() {
   // State to track the selected category and country
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
@@ -14,6 +15,8 @@ export default function Home() {
     <div>
       <Header />
       <CountryDropdown selectedCountry={selectedCountry} setSelectedCountry={setSelectedCountry} />
+      
+      
       <div className="mt-8 flex flex-col justify-center items-center">
         <div>
           <h1 className="font-bold text-xl">Packages</h1>

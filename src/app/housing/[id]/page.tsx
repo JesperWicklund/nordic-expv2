@@ -61,6 +61,11 @@ const AccommodationDetail: React.FC = () => {
         </Link>
       </div>
       <div className="border border-gray-300 rounded-lg p-6 shadow-md">
+      <img
+            src={accommodation.images[0]}
+            alt={accommodation.name}
+            className="w-full h-64 object-cover rounded-xl" // Fixed height for images
+          />
         <h1 className="text-3xl font-bold mb-2">{accommodation.name}</h1>
         <p className="text-lg text-gray-600 mb-4">{accommodation.location}</p>
         <p className="text-gray-800 mb-6">{accommodation.description}</p>
