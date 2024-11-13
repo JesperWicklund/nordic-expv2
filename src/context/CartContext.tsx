@@ -4,12 +4,15 @@ import React, { createContext, useState, useContext, useEffect, ReactNode } from
 import { Event } from '@/types/event'; // Assuming you have an Event type
 import { Accommodation } from '@/types/accommodation'; // Assuming you have an Accommodation type
 
-// Define a cart item type that can hold either an Event or an Accommodation
-type CartItem = Event | Accommodation;
+// Define a cart item type that can hold either an Event or an Accommodation, along with quantity and price
+type CartItem = (Event | Accommodation) & {
+  quantity: number;
+  totalPrice: number;
+};
 
 interface CartContextType {
   cart: CartItem[];
-  addToCart: (item: CartItem) => void;
+  addToCart: (item: CartItem, quantity: number, totalPrice: number) => void;
   removeFromCart: (itemId: string) => void;
 }
 
@@ -34,15 +37,18 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, [cart]);
 
   // Add item to cart function
-  const addToCart = (item: CartItem) => {
+  const addToCart = (item: CartItem, quantity: number, totalPrice: number) => {
     setCart((prevCart) => {
       const existingItemIndex = prevCart.findIndex((cartItem) => cartItem.id === item.id);
       if (existingItemIndex !== -1) {
+        // If item already exists, update the quantity and total price
         const updatedCart = [...prevCart];
-        updatedCart[existingItemIndex] = item; // Update the existing item if already in the cart
+        updatedCart[existingItemIndex].quantity += quantity;
+        updatedCart[existingItemIndex].totalPrice += totalPrice;
         return updatedCart;
       } else {
-        return [...prevCart, item]; // Add new item to the cart
+        // If item doesn't exist, add it to the cart with quantity and total price
+        return [...prevCart, { ...item, quantity, totalPrice }];
       }
     });
   };
