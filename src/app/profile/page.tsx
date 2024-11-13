@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "../../../lib/supabaseClient";
 import Link from "next/link";
+import { useCart } from "@/context/CartContext"; // Import the useCart hook
+import { useRouter } from "next/navigation"; // Import the useRouter hook
 
 type User = {
   email?: string;
@@ -11,6 +13,8 @@ type User = {
 
 export default function Profile() {
   const [user, setUser] = useState<User | null>(null);
+  const { clearCart } = useCart(); // Destructure clearCart from the CartContext
+  const router = useRouter(); // Create a router instance for navigation
 
   useEffect(() => {
     const getUserSession = async () => {
@@ -56,6 +60,8 @@ export default function Profile() {
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     setUser(null); // Reset user state on sign-out
+    clearCart(); // Clear the cart on sign-out
+    router.push("/"); // Redirect to the homepage
   };
 
   return (
