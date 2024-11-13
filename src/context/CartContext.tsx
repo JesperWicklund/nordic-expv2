@@ -14,6 +14,7 @@ interface CartContextType {
   cart: CartItem[];
   addToCart: (item: CartItem, quantity: number, totalPrice: number) => void;
   removeFromCart: (itemId: string) => void;
+  updateItemQuantity: (id: string, newQuantity: number) => void; // Add update function to context
   clearCart: () => void; // Add a method to clear the cart
 }
 
@@ -63,6 +64,15 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     });
   };
 
+  // Update item quantity in the cart
+  const updateItemQuantity = (id: string, newQuantity: number) => {
+    setCart((prevCart) =>
+      prevCart.map((item) =>
+        item.id.toString() === id ? { ...item, quantity: newQuantity, totalPrice: item.totalPrice / item.quantity * newQuantity } : item
+      )
+    );
+  };
+
   // Clear the cart
   const clearCart = () => {
     setCart([]);
@@ -70,7 +80,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart }}>
+    <CartContext.Provider value={{ cart, addToCart, removeFromCart, updateItemQuantity, clearCart }}>
       {children}
     </CartContext.Provider>
   );

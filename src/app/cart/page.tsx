@@ -1,15 +1,16 @@
-'use client';
+"use client";
 import { useCart } from "@/context/CartContext";
 import { useUser } from "@/context/UserContext";
 import { Accommodation } from "@/types/accommodation";
-import { Event } from "@/types/event"; // Assuming you have an Event type
+import { Event } from "@/types/event";
 import { supabase } from "../../../lib/supabaseClient";
 
 // Utility to determine if the item is an accommodation or event
-const isAccommodation = (item: Accommodation | Event): item is Accommodation => "name" in item;
+const isAccommodation = (item: Accommodation | Event): item is Accommodation =>
+  "name" in item;
 
 const CartPage: React.FC = () => {
-  const { cart, removeFromCart } = useCart();
+  const { cart, removeFromCart, updateItemQuantity } = useCart(); // Assuming `updateItemQuantity` is provided in context
   const { user } = useUser();
 
   // Handle checkout
@@ -21,7 +22,7 @@ const CartPage: React.FC = () => {
 
     try {
       const bookings = cart.map((item) => ({
-        user_id: user?.id, // Logged-in user ID
+        user_id: user?.id,
         event_id: isAccommodation(item) ? null : item.id,
         accommodation_id: isAccommodation(item) ? item.id : null,
         booking_date: new Date().toISOString(),
@@ -40,14 +41,21 @@ const CartPage: React.FC = () => {
   };
 
   // Helper function to calculate the total price of an item
-  const getTotalPrice = (item: Accommodation | Event, quantity: number): number => {
+  const getTotalPrice = (
+    item: Accommodation | Event,
+    quantity: number
+  ): number => {
     if (isAccommodation(item)) {
-      // For accommodation, you might need a different price logic
       return parseFloat(item.price) * quantity;
     } else {
-      // For event, handle the price dynamically based on quantity
       return item.price.toLowerCase() === "free" ? 0 : item.price * quantity;
     }
+  };
+
+  // Handle quantity change for events
+  const handleQuantityChange = (item: Event, newQuantity: number) => {
+    if (newQuantity < 1) return; // Don't allow quantity to go below 1
+    updateItemQuantity(item.id.toString(), newQuantity); // Assuming `updateItemQuantity` is a function that updates cart
   };
 
   return (
@@ -57,60 +65,56 @@ const CartPage: React.FC = () => {
         <p>Your cart is empty.</p>
       ) : (
         <div>
-          {cart.map((item) => {
-            const quantity = item.quantity || 1; // Assuming each item has a 'quantity' field in cart
-            const totalPrice = getTotalPrice(item, quantity);
+          {cart
+            .sort((a, b) => {
+              // Place events first by checking if an item is an event or accommodation
+              if (isAccommodation(a) && !isAccommodation(b)) return 1;
+              if (!isAccommodation(a) && isAccommodation(b)) return -1;
+              return 0;
+            })
+            .map((item) => {
+              const quantity = item.quantity || 1;
+              const totalPrice = getTotalPrice(item, quantity);
 
-            return (
-              <div
-                key={item.id}
-                className="border border-gray-300 rounded-lg p-4 shadow-md"
-              >
-                {isAccommodation(item) ? (
-                  <>
-                    <img
-                      src={item.images[0]}
-                      alt={item.name}
-                      className="w-full h-64 object-cover rounded-xl" // Fixed height for images
-                    />
-                    <h2 className="text-xl font-bold">{item.name}</h2>
-                    <p>{item.location}</p>
-                    <p>{item.description}</p>
-                    <p className="text-lg text-[#DE8022]">{item.price}</p>
-                  </>
-                ) : (
-                  <>
-                    <img
-                      src={item.images[0]}
-                      alt={item.title}
-                      className="w-full h-64 object-cover rounded-xl"
-                    />
-                    <h2 className="text-xl font-bold">{item.title}</h2>
-                    <p>{item.location}</p>
-                    <p>{item.description}</p>
-                    
-                  </>
-                )}
+              return (
+                <div key={item.id} className="m-4">
+                  {/* Image and Item Details */}
+                  <div className="flex gap-2">
+                    <div className="h-28">
+                      <img
+                        src={item.images[0]}
+                        alt={isAccommodation(item) ? item.name : item.title}
+                        className="w-full h-full object-cover rounded-xl shadow-md"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
+                        {isAccommodation(item) ? item.name : item.title}
+                      </h2>
+                      {/* Display Beds count only if item is an accommodation */}
+                      {isAccommodation(item) && item.beds ? (
+                        <p className="text-sm text-gray-600">
+                          Beds: {item.beds}
+                        </p>
+                      ) : null}
+                    </div>
+                  </div>
 
-                {/* Show quantity and total price */}
-                <div className="flex items-center space-x-4 mt-2">
-                  <span>Quantity: {quantity}</span>
-                  <span className="text-lg text-[#DE8022]">Total: ${totalPrice.toFixed(2)}</span>
+                  {/* Quantity, Total Price, and Action */}
+                  <div className="mt-4 sm:mt-6 w-full">
+                    <button
+                      onClick={() => removeFromCart(item.id.toString())}
+                      className="w-full sm:w-auto px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-700 transition duration-200"
+                      aria-label={`Remove ${
+                        isAccommodation(item) ? item.name : item.title
+                      } from Cart`}
+                    >
+                      Remove from Cart
+                    </button>
+                  </div>
                 </div>
-
-                {/* Remove from Cart button */}
-                <button
-                  onClick={() => removeFromCart(item.id.toString())}
-                  className="mt-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700"
-                  aria-label={`Remove ${
-                    isAccommodation(item) ? item.name : item.title
-                  } from Cart`}
-                >
-                  Remove from Cart
-                </button>
-              </div>
-            );
-          })}
+              );
+            })}
         </div>
       )}
 
