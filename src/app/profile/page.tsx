@@ -3,9 +3,11 @@ import React, { useEffect, useState } from "react";
 import { supabase } from "../../../lib/supabaseClient";
 import Link from "next/link";
 
-interface User {
+type User = {
   email?: string;
-}
+  name?: string;
+  id?: string; // Add the user's id to fetch from the users table
+};
 
 export default function Profile() {
   const [user, setUser] = useState<User | null>(null);
@@ -13,14 +15,36 @@ export default function Profile() {
   useEffect(() => {
     const getUserSession = async () => {
       const { data } = await supabase.auth.getSession();
-      setUser(data?.session?.user || null);
+      const loggedInUser = data?.session?.user;
+
+      if (loggedInUser) {
+        // Query the "users" table to get the user's name using the user ID
+        const { data: userData, error } = await supabase
+          .from('users')
+          .select('name') // Fetch the name field from the users table
+          .eq('id', loggedInUser.id) // Use the authenticated user's ID
+          .single(); // .single() to ensure only one result is returned
+
+        if (userData) {
+          setUser({ ...loggedInUser, name: userData.name });
+        } else {
+          console.error(error?.message || "Error fetching user data");
+          setUser(loggedInUser); // If there's an issue, still set user (but without name)
+        }
+      } else {
+        setUser(null);
+      }
     };
 
     getUserSession();
 
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
-        setUser(session?.user || null);
+        if (session?.user) {
+          setUser(session.user);
+        } else {
+          setUser(null);
+        }
       }
     );
 
@@ -40,7 +64,7 @@ export default function Profile() {
       {user ? (
         <>
           <p className="text-gray-700 mb-4">
-            Welcome, <span className="font-bold">{user.email}</span>
+            Welcome, <span className="font-bold">{user.name}</span>
           </p>
           <Link href="/userbookings">
             <p className="text-blue-600 hover:text-blue-800 transition duration-300">
