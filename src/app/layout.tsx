@@ -1,6 +1,6 @@
 // app/layout.tsx (or pages/_app.tsx if using Pages Router)
 import type { Metadata } from "next";
-import localFont from "next/font/local";
+
 import "./globals.css";
 import Navbar from "../components/mobile/Navbar";
 import { UserProvider } from "../context/UserContext";
