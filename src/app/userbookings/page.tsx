@@ -16,6 +16,7 @@ type Booking = {
   event_date?: string;
   booking_date: string;
   total_price: number;
+  quantity: number;
 };
 
 export default function UserBookings() {
@@ -40,7 +41,7 @@ export default function UserBookings() {
     setLoading(true);
     const { data: bookingsData, error: bookingsError } = await supabase
       .from("bookings")
-      .select("*, total_price") // Make sure to include total_price
+      .select("*, total_price, quantity") // Ensure to include `quantity`
       .eq("user_id", userId);
   
     if (bookingsError) {
@@ -51,6 +52,7 @@ export default function UserBookings() {
   
     const bookingsWithDetails = await Promise.all(
       bookingsData.map(async (booking: Booking) => {
+        // Fetch event details if it exists
         if (booking.event_id) {
           const { data: eventData, error: eventError } = await supabase
             .from("events")
@@ -66,6 +68,7 @@ export default function UserBookings() {
           }
         }
   
+        // Fetch accommodation details if it exists
         if (booking.accommodation_id) {
           const { data: accommodationData, error: accommodationError } = await supabase
             .from("accommodations")
@@ -145,10 +148,11 @@ export default function UserBookings() {
           <ul>
             {Object.entries(groupedBookings).map(([date, group]) => (
               <li key={date} className="mb-6">
-                <div className="text-gray-800">
+                <div className="text-gray-800 border-b-2">
                   <h3 className="font-semibold text-lg mb-2">
                     Booking made: {new Date(date).toLocaleDateString()}
                   </h3>
+               
                   {group.event.length > 0 && (
                     <div>
                       <h4 className="text-md font-semibold text-gray-700">Events:</h4>
@@ -156,8 +160,8 @@ export default function UserBookings() {
                         <div key={booking.id} className="mb-2 text-gray-600">
                           <div>Event: {booking.event_title}</div>
                           <div className="text-sm">Event Date: {new Date(booking.event_date!).toLocaleDateString()}</div>
-                          <div className="text-sm">Total Price: ${booking.total_price.toFixed(2)}</div> {/* Display total price */}
-                          <button
+                          <div>Attendees: {booking.quantity}</div> {/* Display quantity */}
+                          <div className="text-sm">Total Price: ${booking.total_price.toFixed(2)}</div> {/* Display total price */}                          <button
                             className="text-red-500 mt-2"
                             onClick={() => deleteBooking(booking.id)}
                           >
@@ -183,7 +187,9 @@ export default function UserBookings() {
                         </div>
                       ))}
                     </div>
+                    
                   )}
+                  
                 </div>
               </li>
             ))}

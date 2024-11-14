@@ -25,41 +25,40 @@ const CartPage: React.FC<CartPageProps> = ({ startDate, endDate }) => {
       alert("Please log in to proceed with checkout.");
       return;
     }
-  
+
     try {
       // Calculate total price for all items in the cart
       const totalCartPrice = cart.reduce((total, item) => {
         const quantity = item.quantity || 1;
         return total + getTotalPrice(item, quantity);
       }, 0);
-  
-      // Prepare the bookings with total_price
+
+      // Prepare the bookings with total_price and quantity
       const bookings = cart.map((item) => {
         const quantity = item.quantity || 1;
         const totalPrice = getTotalPrice(item, quantity); // Calculate total price for each item
-  
+
         return {
           user_id: user?.id,
           event_id: isAccommodation(item) ? null : item.id,
           accommodation_id: isAccommodation(item) ? item.id : null,
           booking_date: new Date().toISOString(),
           total_price: totalPrice, // Add total price for this item
+          quantity: quantity, // Include quantity in the booking data
         };
       });
-  
-      // Insert bookings into Supabase with total price
+
+      // Insert bookings into Supabase with total price and quantity
       const { error } = await supabase.from("bookings").insert(bookings);
-  
+
       if (error) {
         console.error("Error adding bookings:", error.message);
       } else {
         // Clear the cart after successful checkout
         cart.forEach((item) => removeFromCart(item.id.toString()));
-        
       }
     } catch (error) {
       console.error("Checkout error:", error);
-      
     }
   };
 
@@ -171,6 +170,20 @@ const CartPage: React.FC<CartPageProps> = ({ startDate, endDate }) => {
             })}
         </div>
       )}
+      { cart.length > 0 &&
+        <div className="p-4">
+          <h2 className="text-lg font-semibold text-gray-800">Total</h2>
+          <p className="text-gray-700">
+            Total Price: $
+            {cart
+              .reduce((total, item) => {
+                const quantity = item.quantity || 1;
+                return total + getTotalPrice(item, quantity);
+              }, 0)
+              .toFixed(2)}
+          </p>
+        </div>
+      }
       {cart.length > 0 && <PaymentForm />}
 
       {/* Checkout button, displayed only if there are items in the cart */}
