@@ -4,8 +4,7 @@ import EventsList from "@/components/EventList";
 import Header from "@/components/mobile/Header";
 import Tags from "@/components/Tags";
 import CountryDropdown from "@/components/mobile/CountryDropDown";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css"; // Import the datepicker styles
+
 
 export default function Home() {
   // State to track the selected category, country, and dates
