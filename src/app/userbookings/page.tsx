@@ -19,8 +19,14 @@ type Booking = {
   quantity: number;
 };
 
+type User = {
+  id: string;
+  email: string;
+  // name: string; // Remove the name property if it's not provided by Supabase
+}
+
 export default function UserBookings() {
-  const [user, setUser] = useState<any | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false); // Track modal state
@@ -30,7 +36,11 @@ export default function UserBookings() {
     const getUserSession = async () => {
       const { data } = await supabase.auth.getSession();
       if (data?.session?.user) {
-        setUser(data.session.user);
+        setUser({
+          id: data.session.user.id,
+          email: data.session.user.email || '',
+          // name: data.session.user.user_metadata.full_name, // Map the name if available
+        });
         fetchUserBookings(data.session.user.id);
       }
     };
