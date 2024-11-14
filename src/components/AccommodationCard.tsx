@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { Accommodation } from "@/types/accommodation";
+import Image from "next/image";
 
 type AccommodationCardProps = {
   accommodation: Accommodation;
@@ -15,7 +16,7 @@ const AccommodationCard: React.FC<AccommodationCardProps> = ({
     <Link href={`/housing/${accommodation.id}`}>
       <div className=" p-4 border-b-2">
         <div className="border border-slate-900 rounded-xl">
-          <img
+          <Image
             src={accommodation.images[0]}
             alt={accommodation.name}
             className="w-full h-64 object-cover rounded-xl"

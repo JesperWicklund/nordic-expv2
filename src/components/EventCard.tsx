@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 
@@ -31,7 +32,7 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
 
         {/* Display the first image if available */}
         {event.images.length > 0 && (
-          <img
+          <Image
             src={event.images[0]}
             alt={event.title}
             className="w-full h-64 object-cover rounded-xl" // Fixed height for images

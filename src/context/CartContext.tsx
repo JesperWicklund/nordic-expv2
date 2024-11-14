@@ -5,7 +5,7 @@ import { Event } from '@/types/event'; // Assuming you have an Event type
 import { Accommodation } from '@/types/accommodation'; // Assuming you have an Accommodation type
 
 // Define a cart item type that can hold either an Event or an Accommodation, along with quantity and price
-type CartItem = (Event | Accommodation) & {
+export type CartItem = (Event | Accommodation) & {
   quantity: number;
   totalPrice: number;
   country: string;

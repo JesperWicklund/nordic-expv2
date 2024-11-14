@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { supabase } from '../../../../lib/supabaseClient';
 import { Accommodation } from '@/types/accommodation';
-import { useCart } from '@/context/CartContext';
+import { useCart, CartItem } from '@/context/CartContext';
 import Link from 'next/link';
 import Image from 'next/image'; // For optimized image rendering
 
@@ -95,7 +95,7 @@ const AccommodationDetail: React.FC = () => {
       <div className="">
         {/* Display the first image from the accommodation images */}
         <div className="w-full h-64 relative">
-          <img
+          <Image
             src={accommodation.images[0]} // Display the first image
             alt={accommodation.name}
             width={500}
@@ -110,9 +110,9 @@ const AccommodationDetail: React.FC = () => {
 
           {/* Room Details */}
           <div className="flex gap-6 text-sm text-gray-500 mb-4">
-            <span>{accommodation.rooms} Rooms</span>
+            <span> Rooms</span>
             <span>{accommodation.beds} Beds</span>
-            <span>{accommodation.bathroom} Wifi</span>
+            <span> Wifi</span>
           </div>
 
           <p className="text-gray-800 mb-6">{accommodation.description}</p>

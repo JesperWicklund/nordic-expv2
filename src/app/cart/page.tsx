@@ -5,6 +5,7 @@ import { Accommodation } from "@/types/accommodation";
 import { Event } from "@/types/event";
 import { supabase } from "../../../lib/supabaseClient";
 import PaymentForm from "@/components/PaymentForm";
+import Image from "next/image";
 
 // Utility to determine if the item is an accommodation or event
 const isAccommodation = (item: Accommodation | Event): item is Accommodation =>
@@ -105,7 +106,7 @@ const CartPage: React.FC<CartPageProps> = ({ startDate, endDate }) => {
                   {/* Image and Item Details */}
                   <div className="flex gap-2">
                     <div className="h-28">
-                      <img
+                      <Image
                         src={item.images[0]}
                         alt={isAccommodation(item) ? item.name : item.title}
                         className="w-full h-full object-cover rounded-xl shadow-md"

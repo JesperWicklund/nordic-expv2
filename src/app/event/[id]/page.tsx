@@ -6,6 +6,7 @@ import { Event } from "@/types/event";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
 import { useUser } from "@/context/UserContext";
+import Image from "next/image";
 
 // Modal Component
 const Modal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
@@ -105,7 +106,7 @@ const EventDetail: React.FC = () => {
     <div className="max-w-4xl mb-20 mx-auto p-4 ">
       
       <div className="mb-6">
-        <img
+        <Image
           src={event.images[0]}
           alt={event.title}
           className="w-full h-64 object-cover rounded-lg"
