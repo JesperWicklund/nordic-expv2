@@ -4,6 +4,7 @@ import { useUser } from "@/context/UserContext";
 import { Accommodation } from "@/types/accommodation";
 import { Event } from "@/types/event";
 import { supabase } from "../../../lib/supabaseClient";
+import PaymentForm from "@/components/PaymentForm";
 
 // Utility to determine if the item is an accommodation or event
 const isAccommodation = (item: Accommodation | Event): item is Accommodation =>
@@ -140,7 +141,7 @@ const CartPage: React.FC<CartPageProps> = ({ startDate, endDate }) => {
                     </div>
                     <button
                       onClick={() => removeFromCart(item.id.toString())}
-                      className="w-full sm:w-auto px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-700 transition duration-200 mt-2"
+                      className="  text-red-500  rounded-sm mt-2"
                       aria-label={`Remove ${
                         isAccommodation(item) ? item.name : item.title
                       } from Cart`}
@@ -153,6 +154,7 @@ const CartPage: React.FC<CartPageProps> = ({ startDate, endDate }) => {
             })}
         </div>
       )}
+      <PaymentForm />
 
       {/* Checkout button, displayed only if there are items in the cart */}
       {cart.length > 0 && (

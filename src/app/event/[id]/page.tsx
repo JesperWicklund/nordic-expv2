@@ -103,11 +103,7 @@ const EventDetail: React.FC = () => {
 
   return (
     <div className="max-w-4xl mb-20 mx-auto p-4 ">
-      <div className="flex justify-between items-center mb-4">
-        <Link href="/housing" className="text-[#DE8022] hover:underline">
-          Back to Listings
-        </Link>
-      </div>
+      
       <div className="mb-6">
         <img
           src={event.images[0]}
@@ -120,7 +116,7 @@ const EventDetail: React.FC = () => {
         <span className="text-lg font-semibold text-[#DE8022]">{event.days} days</span>
       </div>
       <div className="flex justify-between items-center mb-4">
-       <p>${event.price}/person</p>
+       <p>${event.price}</p>
         <div className="flex items-center">
           <span className="text-slate-700">★★★★☆</span>
           <span className="ml-2 text-gray-600">({event.rating})/5</span>
@@ -170,7 +166,7 @@ const EventDetail: React.FC = () => {
       {user ? (
         <button
           onClick={handleAddToCart}
-          className="w-full  px-6 py-3 text-lg font-semibold text-white bg-[#DE8022] rounded-lg shadow-md hover:bg-[#c46f1b] focus:outline-none transition-all duration-200 ease-in-out"
+          className="w-full sm:w-auto px-6 py-3 text-lg font-semibold text-white bg-[#DE8022] rounded-lg shadow-md hover:bg-[#c46f1b] focus:outline-none transition-all duration-200 ease-in-out"
         >
           Book
         </button>
