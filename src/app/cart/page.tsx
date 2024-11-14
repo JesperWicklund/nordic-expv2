@@ -11,14 +11,17 @@ import Image from "next/image";
 const isAccommodation = (item: Accommodation | Event): item is Accommodation =>
   "name" in item;
 
-interface CartPageProps {
-  startDate: Date | null;
-  endDate: Date | null;
-}
 
-const CartPage: React.FC<CartPageProps> = ({ startDate, endDate }) => {
+
+const CartPage = () => {
   const { cart, removeFromCart, updateItemQuantity } = useCart();
   const { user } = useUser();
+
+  // Calculate total price for all items in the cart
+  const totalCartPrice = cart.reduce((total, item) => {
+    const quantity = item.quantity || 1;
+    return total + getTotalPrice(item, quantity);
+  }, 0);
 
   // Handle checkout
   const handleCheckout = async () => {
@@ -28,12 +31,6 @@ const CartPage: React.FC<CartPageProps> = ({ startDate, endDate }) => {
     }
 
     try {
-      // Calculate total price for all items in the cart
-      const totalCartPrice = cart.reduce((total, item) => {
-        const quantity = item.quantity || 1;
-        return total + getTotalPrice(item, quantity);
-      }, 0);
-
       // Prepare the bookings with total_price and quantity
       const bookings = cart.map((item) => {
         const quantity = item.quantity || 1;
@@ -175,13 +172,7 @@ const CartPage: React.FC<CartPageProps> = ({ startDate, endDate }) => {
         <div className="p-4">
           <h2 className="text-lg font-semibold text-gray-800">Total</h2>
           <p className="text-gray-700">
-            Total Price: $
-            {cart
-              .reduce((total, item) => {
-                const quantity = item.quantity || 1;
-                return total + getTotalPrice(item, quantity);
-              }, 0)
-              .toFixed(2)}
+            Total Price: ${totalCartPrice.toFixed(2)}
           </p>
         </div>
       }

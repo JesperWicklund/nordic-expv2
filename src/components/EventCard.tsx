@@ -33,6 +33,8 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
         {/* Display the first image if available */}
         {event.images.length > 0 && (
           <Image
+          width={300}
+          height={300}
             src={event.images[0]}
             alt={event.title}
             className="w-full h-64 object-cover rounded-xl" // Fixed height for images
