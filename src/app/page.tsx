@@ -10,23 +10,8 @@ export default function Home() {
   // State to track the selected category, country, and dates
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [selectedCountry, setSelectedCountry] = useState<string>("All");
-  const [startDate, setStartDate] = useState<Date | undefined>(undefined);
-  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
-  // UseEffect to load selected dates from localStorage
-  useEffect(() => {
-    const storedStartDate = localStorage.getItem("startDate");
-    const storedEndDate = localStorage.getItem("endDate");
-    if (storedStartDate && storedEndDate) {
-      setStartDate(new Date(storedStartDate));
-      setEndDate(new Date(storedEndDate));
-    }
-  }, []);
-
-  // Save dates to localStorage whenever they change
-  useEffect(() => {
-    if (startDate) localStorage.setItem("startDate", startDate.toISOString());
-    if (endDate) localStorage.setItem("endDate", endDate.toISOString());
-  }, [startDate, endDate]);
+ 
+ 
 
   return (
     <div>
