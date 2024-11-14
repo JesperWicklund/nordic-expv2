@@ -25,7 +25,7 @@ export default function Home() {
 
       <div className="mt-8 flex flex-col justify-center items-center">
         <div>
-          <h1 className="font-bold text-xl">Packages</h1>
+          <h1 className="font-bold text-xl">Package</h1>
         </div>
         <div>
           <p className="font-light">Ready to go travel packages</p>
