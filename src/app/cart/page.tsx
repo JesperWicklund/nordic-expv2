@@ -10,7 +10,7 @@ const isAccommodation = (item: Accommodation | Event): item is Accommodation =>
   "name" in item;
 
 const CartPage: React.FC = () => {
-  const { cart, removeFromCart, updateItemQuantity } = useCart(); // Assuming `updateItemQuantity` is provided in context
+  const { cart, removeFromCart, updateItemQuantity } = useCart();
   const { user } = useUser();
 
   // Handle checkout
@@ -33,7 +33,7 @@ const CartPage: React.FC = () => {
       if (error) {
         console.error("Error adding bookings:", error.message);
       } else {
-        cart.forEach((item) => removeFromCart(item.id.toString())); // Remove all items after successful checkout
+        cart.forEach((item) => removeFromCart(item.id.toString()));
       }
     } catch (error) {
       console.error("Checkout error:", error);
@@ -46,16 +46,16 @@ const CartPage: React.FC = () => {
     quantity: number
   ): number => {
     if (isAccommodation(item)) {
-      return parseFloat(item.price) * quantity;
+      return parseFloat(item.price.toString()) * quantity;
     } else {
-      return item.price.toLowerCase() === "free" ? 0 : item.price * quantity;
+      return item.price.toLowerCase() === "free" ? 0 : Number(item.price) * quantity;
     }
   };
 
   // Handle quantity change for events
   const handleQuantityChange = (item: Event, newQuantity: number) => {
     if (newQuantity < 1) return; // Don't allow quantity to go below 1
-    updateItemQuantity(item.id.toString(), newQuantity); // Assuming `updateItemQuantity` is a function that updates cart
+    updateItemQuantity(item.id.toString(), newQuantity); // Convert item.id to a string
   };
 
   return (
@@ -67,7 +67,6 @@ const CartPage: React.FC = () => {
         <div>
           {cart
             .sort((a, b) => {
-              // Place events first by checking if an item is an event or accommodation
               if (isAccommodation(a) && !isAccommodation(b)) return 1;
               if (!isAccommodation(a) && isAccommodation(b)) return -1;
               return 0;
@@ -91,6 +90,7 @@ const CartPage: React.FC = () => {
                       <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
                         {isAccommodation(item) ? item.name : item.title}
                       </h2>
+                      <p>{item.country}</p>
                       {/* Display Beds count only if item is an accommodation */}
                       {isAccommodation(item) && item.beds ? (
                         <p className="text-sm text-gray-600">
@@ -102,9 +102,37 @@ const CartPage: React.FC = () => {
 
                   {/* Quantity, Total Price, and Action */}
                   <div className="mt-4 sm:mt-6 w-full">
+                    <div className="flex items-center gap-4">
+                      {isAccommodation(item) ? null : (
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() =>
+                              handleQuantityChange(item, quantity - 1)
+                            }
+                            className="px-2 py-1 bg-gray-200 rounded text-gray-700"
+                            aria-label="Decrease quantity"
+                          >
+                            -
+                          </button>
+                          <span>{quantity}</span>
+                          <button
+                            onClick={() =>
+                              handleQuantityChange(item, quantity + 1)
+                            }
+                            className="px-2 py-1 bg-gray-200 rounded text-gray-700"
+                            aria-label="Increase quantity"
+                          >
+                            +
+                          </button>
+                        </div>
+                      )}
+                      <p className="text-gray-700">
+                        Total Price: ${totalPrice.toFixed(2)}
+                      </p>
+                    </div>
                     <button
                       onClick={() => removeFromCart(item.id.toString())}
-                      className="w-full sm:w-auto px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-700 transition duration-200"
+                      className="w-full sm:w-auto px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-700 transition duration-200 mt-2"
                       aria-label={`Remove ${
                         isAccommodation(item) ? item.name : item.title
                       } from Cart`}
@@ -118,13 +146,15 @@ const CartPage: React.FC = () => {
         </div>
       )}
 
-      {/* Checkout button */}
-      <button
-        onClick={handleCheckout}
-        className="px-4 py-2 bg-[#DE8022] text-white rounded hover:bg-[#c46f1b]"
-      >
-        Proceed to Checkout
-      </button>
+      {/* Checkout button, displayed only if there are items in the cart */}
+      {cart.length > 0 && (
+        <button
+          onClick={handleCheckout}
+          className="px-4 py-2 bg-[#DE8022] text-white rounded hover:bg-[#c46f1b]"
+        >
+          Proceed to Checkout
+        </button>
+      )}
     </div>
   );
 };

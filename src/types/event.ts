@@ -9,6 +9,8 @@ export type Event = {
     country: string;
     city: string;
     category: string;
+    days: number;
+    rating: number;
     // Add other fields as needed
   }
   

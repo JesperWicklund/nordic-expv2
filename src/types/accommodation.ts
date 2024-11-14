@@ -3,7 +3,8 @@ export type Accommodation ={
     id: number;
     name: string;
     description: string;
-    location: string;
+    country: string;
+    city: string;
     price: number;
     images: string[];
     date: string;

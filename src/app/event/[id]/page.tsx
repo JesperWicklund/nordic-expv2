@@ -1,4 +1,4 @@
-'use client';
+'use client'
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { supabase } from "../../../../lib/supabaseClient";
@@ -7,20 +7,50 @@ import Link from "next/link";
 import { useCart } from "@/context/CartContext";
 import { useUser } from "@/context/UserContext";
 
-const EventDetail: React.FC = () => {
-  const { id } = useParams(); // Get the event id from URL parameters
-  const { addToCart } = useCart(); // Access cart context
-  const { user } = useUser(); // Access user from UserContext
+// Modal Component
+const Modal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
+        <h2 className="text-2xl font-bold mb-4">Item added to cart</h2>
+        <div className="flex flex-col gap-4">
+          <Link
+            href="/cart"
+            className="px-4 py-2 bg-[#DE8022] text-white rounded hover:bg-[#c46f1b] text-center"
+          >
+            Go to Cart
+          </Link>
+          <Link
+            href="/housing"
+            className="px-4 py-2 bg-[#DE8022] text-white rounded hover:bg-[#c46f1b] text-center"
+          >
+            See Available Apartments
+          </Link>
+          <button
+            onClick={onClose}
+            className="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
-  // State for the event data, loading/error state, and ticket count
+const EventDetail: React.FC = () => {
+  const { id } = useParams();
+  const { addToCart } = useCart();
+  const { user } = useUser();
+
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [ticketCount, setTicketCount] = useState<number>(1); // Default to 1 ticket
+  const [ticketCount, setTicketCount] = useState<number>(1);
+  const [showModal, setShowModal] = useState(false); // Modal visibility state
 
-  // Fetch event details based on the event id from URL
   useEffect(() => {
-    if (!id) return; // If no id, do not proceed
+    if (!id) return;
 
     const fetchEvent = async () => {
       try {
@@ -28,92 +58,133 @@ const EventDetail: React.FC = () => {
           .from("events")
           .select("*")
           .eq("id", id)
-          .single(); // Fetch a single event by ID
+          .single();
 
         if (error) {
-          setError(error.message); // Set error message if query fails
+          setError(error.message);
         } else {
-          setEvent(data); // Set event data if successful
+          setEvent(data);
         }
       } catch (err) {
-        setError("Failed to load event details"); // Catch unexpected errors
+        setError("Failed to load event details");
       } finally {
-        setLoading(false); // End loading state
+        setLoading(false);
       }
     };
 
     fetchEvent();
-  }, [id]); // Fetch data when id changes (on mount or URL change)
+  }, [id]);
 
   const handleIncrease = () => {
-    setTicketCount((prevCount) => prevCount + 1); // Increment ticket count
+    setTicketCount((prevCount) => prevCount + 1);
   };
 
   const handleDecrease = () => {
     if (ticketCount > 1) {
-      setTicketCount((prevCount) => prevCount - 1); // Decrement ticket count but prevent going below 1
+      setTicketCount((prevCount) => prevCount - 1);
     }
   };
 
-  // Calculate total price based on ticket count
-  const totalPrice = event?.price.toLowerCase() === "free" 
-    ? 0 
-    : event?.price * ticketCount;
+  const handleAddToCart = () => {
+    if (event) {
+      addToCart({ ...event, quantity: ticketCount, totalPrice });
+      setShowModal(true); // Show the modal after adding to cart
+    }
+  };
 
-  if (loading) return <div>Loading...</div>; // Show loading state
-  if (error) return <div>{error}</div>; // Show error state
-  if (!event) return <div>No event found</div>; // Show if no event found
+  const totalPrice =
+    event?.price.toLowerCase() === "free"
+      ? 0
+      : Number(event?.price) * ticketCount;
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
+  if (!event) return <div>No event found</div>;
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
+    <div className="max-w-4xl mb-20 mx-auto p-4 ">
       <div className="flex justify-between items-center mb-4">
         <Link href="/housing" className="text-[#DE8022] hover:underline">
           Back to Listings
         </Link>
       </div>
-      <div className="border border-gray-300 rounded-lg p-6 shadow-md">
-        <h1 className="text-3xl font-bold mb-2">{event.title}</h1>
-        <p className="text-lg text-gray-600 mb-4">{event.location}</p>
-        <p className="text-gray-800 mb-6">{event.description}</p>
-        
-        {/* Ticket quantity controls */}
-        <div className="flex items-center mb-4">
-          <button
-            onClick={handleDecrease}
-            className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
-          >
-            -
-          </button>
-          <span className="mx-4 text-lg font-semibold">{ticketCount}</span>
-          <button
-            onClick={handleIncrease}
-            className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
-          >
-            +
-          </button>
-        </div>
-
-        {/* Dynamic price based on the number of tickets */}
-        <div className="flex justify-between items-center mb-4">
-          <span className="text-lg font-semibold text-[#DE8022]">
-            {event.price.toLowerCase() === "free" ? "Free" : `$${totalPrice.toFixed(2)}`}
-          </span>
-
-          {/* Conditionally render the Add to Cart button based on login status */}
-          {user ? (
-            <button
-              onClick={() => addToCart(event, ticketCount, totalPrice)} // Pass the ticket count and total price
-              className="px-4 py-2 bg-[#DE8022] text-white rounded hover:bg-[#c46f1b]"
-            >
-              Add to Cart
-            </button>
-          ) : (
-            <Link href="/login" className="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500">
-              Log in to add to cart
-            </Link>
-          )}
+      <div className="mb-6">
+        <img
+          src={event.images[0]}
+          alt={event.title}
+          className="w-full h-64 object-cover rounded-lg"
+        />
+      </div>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">{event.title}</h1>
+        <span className="text-lg font-semibold text-[#DE8022]">{event.days} days</span>
+      </div>
+      <div className="flex justify-between items-center mb-4">
+       <p>${event.price}/person</p>
+        <div className="flex items-center">
+          <span className="text-slate-700">★★★★☆</span>
+          <span className="ml-2 text-gray-600">({event.rating})/5</span>
         </div>
       </div>
+      <p className="text-gray-700 mb-4">{event.description}</p>
+
+      <div className="mb-4">
+        <h2 className="font-semibold text-lg mb-2">Highlights:</h2>
+        <div className="flex gap-4 mb-4">
+          <span className="px-4 py-2 bg-gray-200 rounded-full text-sm">Guided tour</span>
+          <span className="px-4 py-2 bg-gray-200 rounded-full text-sm">Museum</span>
+          <span className="px-4 py-2 bg-gray-200 rounded-full text-sm">Monumental Sight</span>
+        </div>
+      </div>
+
+      <div className="mb-4">
+        <h2 className="font-semibold text-lg mb-2">Locations:</h2>
+        <div className="w-full h-32 bg-gray-200 rounded-lg">
+          {/* Map placeholder or actual map iframe here */}
+        </div>
+      </div>
+
+      {/* Ticket quantity controls */}
+      <div className="flex items-center justify-center gap-4 mb-6">
+      <p className="text-xl text-gray-800">
+          {event.price.toLowerCase() === "free" ? "Free" : `$${totalPrice.toFixed(2)}`}
+        </p>
+        <button
+          onClick={handleDecrease}
+          className="px-4 py-2 bg-gray-200 text-gray-700 font-semibold rounded-l-lg hover:bg-gray-300 focus:outline-none transition-all duration-200 ease-in-out"
+        >
+          -
+        </button>
+        <span className="px-6 py-2 text-xl font-semibold text-gray-800 bg-gray-100 rounded-md shadow-inner">
+          {ticketCount}
+        </span>
+        <button
+          onClick={handleIncrease}
+          className="px-4 py-2 bg-gray-200 text-gray-700 font-semibold rounded-r-lg hover:bg-gray-300 focus:outline-none transition-all duration-200 ease-in-out"
+        >
+          +
+        </button>
+      </div>
+
+      {/* Book Button */}
+      {user ? (
+        <button
+          onClick={handleAddToCart}
+          className="w-full  px-6 py-3 text-lg font-semibold text-white bg-[#DE8022] rounded-lg shadow-md hover:bg-[#c46f1b] focus:outline-none transition-all duration-200 ease-in-out"
+        >
+          Book
+        </button>
+      ) : (
+        <Link
+          href="/login"
+          className="w-full sm:w-auto px-6 py-3 text-lg font-semibold text-white bg-gray-400 rounded-lg shadow-md hover:bg-gray-500 focus:outline-none transition-all duration-200 ease-in-out text-center"
+        >
+          Log in to book
+        </Link>
+      )}
+      
+      {/* Render the modal if showModal is true */}
+      {showModal && <Modal onClose={() => setShowModal(false)} />}
     </div>
   );
 };

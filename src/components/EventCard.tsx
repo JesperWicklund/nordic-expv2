@@ -41,7 +41,7 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
 
       <div className="p-4 flex-grow"> {/* Use flex-grow to ensure this part takes up the remaining space */}
         <h3 className="text-lg font-semibold">{event.title}</h3>
-        <p className="text-gray-700 text-sm mt-2">{event.description}</p>
+        <p className="text-gray-700 text-sm mt-2 overflow-hidden whitespace-nowrap text-ellipsis">{event.description}</p>
         <p className="text-gray-500 text-xs mt-2">
           {new Date(event.date).toLocaleDateString()}
         </p>

@@ -1,25 +1,38 @@
-'use client'
+"use client";
 // components/AccommodationCard.tsx
-import React from 'react';
-import Link from 'next/link';
-import { Accommodation } from '@/types/accommodation';
+import React from "react";
+import Link from "next/link";
+import { Accommodation } from "@/types/accommodation";
 
 type AccommodationCardProps = {
   accommodation: Accommodation;
 };
 
-const AccommodationCard: React.FC<AccommodationCardProps> = ({ accommodation }) => {
+const AccommodationCard: React.FC<AccommodationCardProps> = ({
+  accommodation,
+}) => {
   return (
     <Link href={`/housing/${accommodation.id}`}>
-      <div className="block border border-gray-300 rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow duration-200">
-        <h2 className="text-lg font-bold mb-2">{accommodation.name}</h2>
-        <p className="text-sm text-gray-600 mb-4">{accommodation.location}</p>
-        <p className="text-gray-800 mb-4">{accommodation.description}</p>
-        <div className="flex justify-between items-center">
-          <span className="text-lg font-semibold text-[#DE8022]">
-            ${accommodation.price}
-          </span>
-          
+      <div className=" p-4 border-b-2">
+        <div className="border border-slate-900 rounded-xl">
+          <img
+            src={accommodation.images[0]}
+            alt={accommodation.name}
+            className="w-full h-64 object-cover rounded-xl"
+          />
+        </div>
+        <div className="p-2">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-bold ">{accommodation.name}</h2>
+            <p>
+              {accommodation.country}, {accommodation.city}
+            </p>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-lg font-semibold text-[#DE8022]">
+              ${accommodation.price}
+            </span>
+          </div>
         </div>
       </div>
     </Link>

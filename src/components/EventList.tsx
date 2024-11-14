@@ -6,7 +6,7 @@ import Loader from './Loader';
 type EventsListProps = {
   selectedCategory: string;
   selectedCountry: string;
-}
+};
 
 export default function EventsList({ selectedCategory, selectedCountry }: EventsListProps) {
   const [events, setEvents] = useState<EventCardProps['event'][]>([]);
@@ -17,7 +17,7 @@ export default function EventsList({ selectedCategory, selectedCountry }: Events
       setLoading(true);
       const eventsData = await fetchEvents();
 
-      // Sort events by date (assuming `event.date` exists and is a valid date string)
+      // Sort events by date
       const sortedEvents = eventsData.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
       setEvents(sortedEvents);

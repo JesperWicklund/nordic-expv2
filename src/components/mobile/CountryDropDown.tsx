@@ -24,7 +24,7 @@ export default function CountryDropdown({ selectedCountry, setSelectedCountry }:
         id="country-select"
         value={selectedCountry}
         onChange={(e) => setSelectedCountry(e.target.value)} // Update selected country on change
-        className="block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+        className="block w-full border border-gray-900 rounded-xl p-2 "
       >
         {countries.map((country, index) => (
           <option key={index} value={country}>
