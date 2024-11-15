@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { supabase } from "../../../../lib/supabaseClient";
@@ -104,9 +104,10 @@ const EventDetail: React.FC = () => {
 
   return (
     <div className="max-w-4xl mb-20 mx-auto p-4 ">
-      
       <div className="mb-6">
         <Image
+          width={500}
+          height={500}
           src={event.images[0]}
           alt={event.title}
           className="w-full h-64 object-cover rounded-lg"
@@ -114,10 +115,12 @@ const EventDetail: React.FC = () => {
       </div>
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">{event.title}</h1>
-        <span className="text-lg font-semibold text-[#DE8022]">{event.days} days</span>
+        <span className="text-lg font-semibold text-[#DE8022]">
+          {event.days} days
+        </span>
       </div>
       <div className="flex justify-between items-center mb-4">
-       <p>${event.price}</p>
+        <p>${event.price}</p>
         <div className="flex items-center">
           <span className="text-slate-700">★★★★☆</span>
           <span className="ml-2 text-gray-600">({event.rating})/5</span>
@@ -128,9 +131,15 @@ const EventDetail: React.FC = () => {
       <div className="mb-4">
         <h2 className="font-semibold text-lg mb-2">Highlights:</h2>
         <div className="flex gap-4 mb-4">
-          <span className="px-4 py-2 bg-gray-200 rounded-full text-sm">Guided tour</span>
-          <span className="px-4 py-2 bg-gray-200 rounded-full text-sm">Museum</span>
-          <span className="px-4 py-2 bg-gray-200 rounded-full text-sm">Monumental Sight</span>
+          <span className="px-4 py-2 bg-gray-200 rounded-full text-sm">
+            Guided tour
+          </span>
+          <span className="px-4 py-2 bg-gray-200 rounded-full text-sm">
+            Museum
+          </span>
+          <span className="px-4 py-2 bg-gray-200 rounded-full text-sm">
+            Monumental Sight
+          </span>
         </div>
       </div>
 
@@ -143,8 +152,10 @@ const EventDetail: React.FC = () => {
 
       {/* Ticket quantity controls */}
       <div className="flex items-center justify-center gap-4 mb-6">
-      <p className="text-xl text-gray-800">
-          {event.price.toLowerCase() === "free" ? "Free" : `$${totalPrice.toFixed(2)}`}
+        <p className="text-xl text-gray-800">
+          {event.price.toLowerCase() === "free"
+            ? "Free"
+            : `$${totalPrice.toFixed(2)}`}
         </p>
         <button
           onClick={handleDecrease}
@@ -179,7 +190,7 @@ const EventDetail: React.FC = () => {
           Log in to book
         </Link>
       )}
-      
+
       {/* Render the modal if showModal is true */}
       {showModal && <Modal onClose={() => setShowModal(false)} />}
     </div>

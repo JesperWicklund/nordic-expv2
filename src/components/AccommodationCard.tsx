@@ -17,6 +17,8 @@ const AccommodationCard: React.FC<AccommodationCardProps> = ({
       <div className=" p-4 border-b-2">
         <div className="border border-slate-900 rounded-xl">
           <Image
+            width={500}
+            height={500}
             src={accommodation.images[0]}
             alt={accommodation.name}
             className="w-full h-64 object-cover rounded-xl"

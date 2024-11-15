@@ -16,6 +16,19 @@ const isAccommodation = (item: Accommodation | Event): item is Accommodation =>
 const CartPage = () => {
   const { cart, removeFromCart, updateItemQuantity } = useCart();
   const { user } = useUser();
+  // Helper function to calculate the total price of an item
+  const getTotalPrice = (
+    item: Accommodation | Event,
+    quantity: number
+  ): number => {
+    if (isAccommodation(item)) {
+      return parseFloat(item.price.toString()) * quantity;
+    } else {
+      return item.price.toLowerCase() === "free"
+        ? 0
+        : Number(item.price) * quantity;
+    }
+  };
 
   // Calculate total price for all items in the cart
   const totalCartPrice = cart.reduce((total, item) => {
@@ -60,19 +73,6 @@ const CartPage = () => {
     }
   };
 
-  // Helper function to calculate the total price of an item
-  const getTotalPrice = (
-    item: Accommodation | Event,
-    quantity: number
-  ): number => {
-    if (isAccommodation(item)) {
-      return parseFloat(item.price.toString()) * quantity;
-    } else {
-      return item.price.toLowerCase() === "free"
-        ? 0
-        : Number(item.price) * quantity;
-    }
-  };
 
   // Handle quantity change for events
   const handleQuantityChange = (item: Event, newQuantity: number) => {
@@ -104,6 +104,8 @@ const CartPage = () => {
                   <div className="flex gap-2">
                     <div className="h-28">
                       <Image
+                      width={500}
+                      height={500}
                         src={item.images[0]}
                         alt={isAccommodation(item) ? item.name : item.title}
                         className="w-full h-full object-cover rounded-xl shadow-md"
