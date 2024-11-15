@@ -4,6 +4,8 @@ import EventsList from "@/components/EventList";
 import Header from "@/components/mobile/Header";
 import Tags from "@/components/Tags";
 import CountryDropdown from "@/components/mobile/CountryDropDown";
+import DateSelector from "@/components/DateSelector";
+
 
 
 export default function Home() {
@@ -21,7 +23,7 @@ export default function Home() {
         setSelectedCountry={setSelectedCountry}
       />
 
-      
+      <DateSelector />
 
       <div className="mt-8 flex flex-col justify-center items-center">
         <div>

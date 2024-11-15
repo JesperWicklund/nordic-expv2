@@ -6,6 +6,7 @@ import Navbar from "../components/mobile/Navbar";
 import { UserProvider } from "../context/UserContext";
 import Header from "@/components/desktop/Header";
 import { CartProvider } from "@/context/CartContext";
+import { DateProvider } from "@/context/DateContext";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -22,9 +23,11 @@ export default function RootLayout({
       <body>
         <UserProvider>
           <CartProvider>
-            <Header />
-            <div className="sm:mt-24">{children}</div>
-            <Navbar />
+            <DateProvider>
+              <Header />
+              <div className="sm:mt-24">{children}</div>
+              <Navbar />
+            </DateProvider>
           </CartProvider>
         </UserProvider>
       </body>

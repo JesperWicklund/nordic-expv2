@@ -1,6 +1,7 @@
 "use client";
 import { useCart } from "@/context/CartContext";
 import { useUser } from "@/context/UserContext";
+import { useDateContext } from "@/context/DateContext"; // Import the DateContext
 import { Accommodation } from "@/types/accommodation";
 import { Event } from "@/types/event";
 import { supabase } from "../../../lib/supabaseClient";
@@ -11,11 +12,11 @@ import Image from "next/image";
 const isAccommodation = (item: Accommodation | Event): item is Accommodation =>
   "name" in item;
 
-
-
 const CartPage = () => {
   const { cart, removeFromCart, updateItemQuantity } = useCart();
   const { user } = useUser();
+  const { selectedStartDate, selectedEndDate, clearDates } = useDateContext(); // Access dates from context
+
   // Helper function to calculate the total price of an item
   const getTotalPrice = (
     item: Accommodation | Event,
@@ -37,41 +38,46 @@ const CartPage = () => {
   }, 0);
 
   // Handle checkout
-  const handleCheckout = async () => {
-    if (!user) {
-      alert("Please log in to proceed with checkout.");
-      return;
+  // Handle checkout
+const handleCheckout = async () => {
+  if (!user) {
+    
+    return;
+  }
+
+  try {
+    // Prepare the bookings with total_price, quantity, start_date, and end_date
+    const bookings = cart.map((item) => {
+      const quantity = item.quantity || 1;
+      const totalPrice = getTotalPrice(item, quantity); // Calculate total price for each item
+
+      return {
+        user_id: user?.id,
+        event_id: isAccommodation(item) ? null : item.id,
+        accommodation_id: isAccommodation(item) ? item.id : null,
+        booking_date: new Date().toISOString(),
+        start_date: selectedStartDate, // Add the selected start date
+        end_date: selectedEndDate,     // Add the selected end date
+        total_price: totalPrice,      // Add total price for this item
+        quantity: quantity,           // Include quantity in the booking data
+      };
+    });
+
+    // Insert bookings into Supabase with total price, quantity, start_date, and end_date
+    const { error } = await supabase.from("bookings").insert(bookings);
+
+    if (error) {
+      console.error("Error adding bookings:", error.message);
+    } else {
+      // Clear the cart after successful checkout
+      cart.forEach((item) => removeFromCart(item.id.toString()));
+      clearDates(); // Clear the selected dates
+      alert("Checkout successful!"); // Optionally notify the user of successful checkout
     }
-
-    try {
-      // Prepare the bookings with total_price and quantity
-      const bookings = cart.map((item) => {
-        const quantity = item.quantity || 1;
-        const totalPrice = getTotalPrice(item, quantity); // Calculate total price for each item
-
-        return {
-          user_id: user?.id,
-          event_id: isAccommodation(item) ? null : item.id,
-          accommodation_id: isAccommodation(item) ? item.id : null,
-          booking_date: new Date().toISOString(),
-          total_price: totalPrice, // Add total price for this item
-          quantity: quantity, // Include quantity in the booking data
-        };
-      });
-
-      // Insert bookings into Supabase with total price and quantity
-      const { error } = await supabase.from("bookings").insert(bookings);
-
-      if (error) {
-        console.error("Error adding bookings:", error.message);
-      } else {
-        // Clear the cart after successful checkout
-        cart.forEach((item) => removeFromCart(item.id.toString()));
-      }
-    } catch (error) {
-      console.error("Checkout error:", error);
-    }
-  };
+  } catch (error) {
+    console.error("Checkout error:", error);
+  }
+};
 
 
   // Handle quantity change for events
@@ -88,6 +94,19 @@ const CartPage = () => {
         <p>Your cart is empty.</p>
       ) : (
         <div>
+          {/* Display the selected start and end dates */}
+          {selectedStartDate && selectedEndDate && (
+            <div className="mb-6 p-4 border border-gray-300 rounded-lg">
+              <h3 className="text-xl font-semibold">Booking Dates:</h3>
+              <p>
+                <strong>Start Date:</strong> {selectedStartDate}
+              </p>
+              <p>
+                <strong>End Date:</strong> {selectedEndDate}
+              </p>
+            </div>
+          )}
+
           {cart
             .sort((a, b) => {
               if (isAccommodation(a) && !isAccommodation(b)) return 1;
@@ -104,8 +123,8 @@ const CartPage = () => {
                   <div className="flex gap-2">
                     <div className="h-28">
                       <Image
-                      width={500}
-                      height={500}
+                        width={500}
+                        height={500}
                         src={item.images[0]}
                         alt={isAccommodation(item) ? item.name : item.title}
                         className="w-full h-full object-cover rounded-xl shadow-md"
@@ -157,7 +176,7 @@ const CartPage = () => {
                     </div>
                     <button
                       onClick={() => removeFromCart(item.id.toString())}
-                      className="  text-red-500  rounded-sm mt-2"
+                      className="text-red-500 rounded-sm mt-2"
                       aria-label={`Remove ${
                         isAccommodation(item) ? item.name : item.title
                       } from Cart`}
@@ -170,23 +189,26 @@ const CartPage = () => {
             })}
         </div>
       )}
-      { cart.length > 0 &&
+
+      {/* Display Total Price */}
+      {cart.length > 0 && (
         <div className="p-4">
           <h2 className="text-lg font-semibold text-gray-800">Total</h2>
           <p className="text-gray-700">
             Total Price: ${totalCartPrice.toFixed(2)}
           </p>
         </div>
-      }
+      )}
+
       {cart.length > 0 && <PaymentForm />}
 
-      {/* Checkout button, displayed only if there are items in the cart */}
+      {/* Checkout button */}
       {cart.length > 0 && (
         <button
           onClick={handleCheckout}
           className="px-4 py-2 bg-[#DE8022] text-white rounded hover:bg-[#c46f1b] transition duration-200"
         >
-          Proceed to Checkout
+          Comfirm Payment
         </button>
       )}
     </div>
