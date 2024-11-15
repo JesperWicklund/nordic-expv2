@@ -21,7 +21,11 @@ const HousingPage: React.FC = () => {
         setAccommodations(data);
         setFilteredAccommodations(data); // Initialize with full data set
       } catch (error: unknown) {
-        setError('Failed to load accommodations. Please try again later.');
+        if (error instanceof Error) {
+          setError(`Failed to load accommodations: ${error.message}`);
+        } else {
+          setError('An unknown error occurred. Please try again later.');
+        }
       } finally {
         setLoading(false);
       }

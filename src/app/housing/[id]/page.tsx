@@ -60,7 +60,11 @@ const AccommodationDetail: React.FC = () => {
           setAccommodation(data);
         }
       } catch (err: unknown) {
-        setError('Failed to load accommodation details');
+        if (err instanceof Error) {
+          setError(`Failed to load accommodations: ${err.message}`);
+        } else {
+          setError('An unknown error occurred. Please try again later.');
+        }
       } finally {
         setLoading(false);
       }

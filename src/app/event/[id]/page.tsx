@@ -67,7 +67,11 @@ const EventDetail: React.FC = () => {
           setEvent(data);
         }
       } catch (err: unknown) {
-        setError("Failed to load event details");
+        if (err instanceof Error) {
+          setError(`Failed to load events: ${err.message}`);
+        } else {
+          setError('An unknown error occurred. Please try again later.');
+        }
       } finally {
         setLoading(false);
       }
