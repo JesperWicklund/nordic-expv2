@@ -11,6 +11,7 @@ export type Event = {
     category: string;
     days: number;
     rating: number;
+    map: string ;
     // Add other fields as needed
   }
   

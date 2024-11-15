@@ -22,7 +22,7 @@ const SignIn: React.FC = () => {
       // Successfully signed in
       setMessage('Signed in successfully! ');
       // Redirect to /event page after successful sign-in
-      router.push('/profile');
+      router.push('/');
     }
   };
 

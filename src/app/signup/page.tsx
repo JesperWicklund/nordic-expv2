@@ -1,13 +1,15 @@
 'use client'
 import { useState } from "react";
 import { supabase } from "../../../lib/supabaseClient"; 
+import { useRouter } from "next/navigation";
 
 const SignUp: React.FC = () => {
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [name, setName] = useState<string>(''); // New state for name
     const [message, setMessage] = useState<string>('');
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(false);´
+    const router = useRouter();
 
     const handleSignUp = async () => {
         if (!email || !password || !name) {
@@ -48,6 +50,7 @@ const SignUp: React.FC = () => {
             } else {
                 // Success message after both sign-up and insertion
                 setMessage('Sign up successful!');
+                router.push('/'); // Redirect to the home page after sign-up
             }
         } else {
             setMessage("Something went wrong during sign-up. Please try again.");

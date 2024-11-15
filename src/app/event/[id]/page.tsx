@@ -70,7 +70,7 @@ const EventDetail: React.FC = () => {
         if (err instanceof Error) {
           setError(`Failed to load events: ${err.message}`);
         } else {
-          setError('An unknown error occurred. Please try again later.');
+          setError("An unknown error occurred. Please try again later.");
         }
       } finally {
         setLoading(false);
@@ -149,18 +149,20 @@ const EventDetail: React.FC = () => {
 
       <div className="mb-4">
         <h2 className="font-semibold text-lg mb-2">Locations:</h2>
-        <div className="w-full h-32 bg-gray-200 rounded-lg">
-          {/* Map placeholder or actual map iframe here */}
+        <div className="h-32 bg-gray-200 rounded-lg overflow-hidden">
+          <Image
+            src={event.map}
+            alt="Map"
+            layout="intrinsic"
+            width={300}
+            height={300}
+            className="object-cover w-full h-full"
+          />
         </div>
       </div>
 
       {/* Ticket quantity controls */}
-      <div className="flex items-center justify-center gap-4 mb-6">
-        <p className="text-xl text-gray-800">
-          {event.price.toLowerCase() === "free"
-            ? "Free"
-            : `$${totalPrice.toFixed(2)}`}
-        </p>
+      <div className="flex items-center  gap-4 mb-6">
         <button
           onClick={handleDecrease}
           className="px-4 py-2 bg-gray-200 text-gray-700 font-semibold rounded-l-lg hover:bg-gray-300 focus:outline-none transition-all duration-200 ease-in-out"
@@ -176,24 +178,28 @@ const EventDetail: React.FC = () => {
         >
           +
         </button>
+        <p className="text-xl text-gray-800">
+          {event.price.toLowerCase() === "free"
+            ? "Free"
+            : `$${totalPrice.toFixed(2)}`}
+        </p>
+        {/* Book Button */}
+        {user ? (
+          <button
+            onClick={handleAddToCart}
+            className="w-full sm:w-auto px-6 py-3 text-lg font-semibold text-white bg-[#DE8022] rounded-lg shadow-md hover:bg-[#c46f1b] focus:outline-none transition-all duration-200 ease-in-out"
+          >
+            Book
+          </button>
+        ) : (
+          <Link
+            href="/signin"
+            className="w-full sm:w-auto px-6 py-3 text-lg font-semibold text-white bg-gray-400 rounded-lg shadow-md hover:bg-gray-500 focus:outline-none transition-all duration-200 ease-in-out text-center"
+          >
+            Log in to book
+          </Link>
+        )}
       </div>
-
-      {/* Book Button */}
-      {user ? (
-        <button
-          onClick={handleAddToCart}
-          className="w-full sm:w-auto px-6 py-3 text-lg font-semibold text-white bg-[#DE8022] rounded-lg shadow-md hover:bg-[#c46f1b] focus:outline-none transition-all duration-200 ease-in-out"
-        >
-          Book
-        </button>
-      ) : (
-        <Link
-          href="/login"
-          className="w-full sm:w-auto px-6 py-3 text-lg font-semibold text-white bg-gray-400 rounded-lg shadow-md hover:bg-gray-500 focus:outline-none transition-all duration-200 ease-in-out text-center"
-        >
-          Log in to book
-        </Link>
-      )}
 
       {/* Render the modal if showModal is true */}
       {showModal && <Modal onClose={() => setShowModal(false)} />}
