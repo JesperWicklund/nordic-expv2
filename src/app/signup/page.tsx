@@ -8,7 +8,7 @@ const SignUp: React.FC = () => {
     const [password, setPassword] = useState<string>('');
     const [name, setName] = useState<string>(''); // New state for name
     const [message, setMessage] = useState<string>('');
-    const [isLoading, setIsLoading] = useState<boolean>(false);´
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const router = useRouter();
 
     const handleSignUp = async () => {
