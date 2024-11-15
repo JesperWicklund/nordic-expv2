@@ -66,7 +66,7 @@ const EventDetail: React.FC = () => {
         } else {
           setEvent(data);
         }
-      } catch (err) {
+      } catch (err: unknown) {
         setError("Failed to load event details");
       } finally {
         setLoading(false);

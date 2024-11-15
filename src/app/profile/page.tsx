@@ -72,7 +72,7 @@ export default function Profile() {
           <p className="text-gray-700 mb-4">
             Welcome, <span className="font-bold">{user.name}</span>
           </p>
-          <Link href="/userbookings">
+          <Link href="/profile/userbookings">
             <p className="text-blue-600 hover:text-blue-800 transition duration-300">
               My Bookings
             </p>

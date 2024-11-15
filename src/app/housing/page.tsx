@@ -20,7 +20,7 @@ const HousingPage: React.FC = () => {
         const data = await fetchAccommodations();
         setAccommodations(data);
         setFilteredAccommodations(data); // Initialize with full data set
-      } catch (error) {
+      } catch (error: unknown) {
         setError('Failed to load accommodations. Please try again later.');
       } finally {
         setLoading(false);

@@ -1,4 +1,3 @@
-// components/DateSelector.tsx
 import { useState } from "react";
 import { useDateContext } from "../context/DateContext"; // Import the custom hook
 
@@ -47,6 +46,7 @@ const DateSelector: React.FC = () => {
             id="end-date"
             name="end-date"
             value={endDate}
+            min={startDate}  // Set the min attribute to the selected start date
             onChange={handleEndDateChange}
             className="block w-full border border-gray-900 rounded-xl p-2"
           />

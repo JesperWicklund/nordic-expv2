@@ -7,6 +7,8 @@ import { Event } from "@/types/event";
 import { supabase } from "../../../lib/supabaseClient";
 import PaymentForm from "@/components/PaymentForm";
 import Image from "next/image";
+import ComfirmPayment from "@/components/ComfirmPayment";
+import { useState } from "react";
 
 // Utility to determine if the item is an accommodation or event
 const isAccommodation = (item: Accommodation | Event): item is Accommodation =>
@@ -16,6 +18,8 @@ const CartPage = () => {
   const { cart, removeFromCart, updateItemQuantity } = useCart();
   const { user } = useUser();
   const { selectedStartDate, selectedEndDate, clearDates } = useDateContext(); // Access dates from context
+  const [isModalOpen, setIsModalOpen] = useState(false); // State for controlling the modal visibility
+  const [modalMessage, setModalMessage] = useState(""); // State to store modal message
 
   // Helper function to calculate the total price of an item
   const getTotalPrice = (
@@ -39,46 +43,49 @@ const CartPage = () => {
 
   // Handle checkout
   // Handle checkout
-const handleCheckout = async () => {
-  if (!user) {
-    
-    return;
-  }
-
-  try {
-    // Prepare the bookings with total_price, quantity, start_date, and end_date
-    const bookings = cart.map((item) => {
-      const quantity = item.quantity || 1;
-      const totalPrice = getTotalPrice(item, quantity); // Calculate total price for each item
-
-      return {
-        user_id: user?.id,
-        event_id: isAccommodation(item) ? null : item.id,
-        accommodation_id: isAccommodation(item) ? item.id : null,
-        booking_date: new Date().toISOString(),
-        start_date: selectedStartDate, // Add the selected start date
-        end_date: selectedEndDate,     // Add the selected end date
-        total_price: totalPrice,      // Add total price for this item
-        quantity: quantity,           // Include quantity in the booking data
-      };
-    });
-
-    // Insert bookings into Supabase with total price, quantity, start_date, and end_date
-    const { error } = await supabase.from("bookings").insert(bookings);
-
-    if (error) {
-      console.error("Error adding bookings:", error.message);
-    } else {
-      // Clear the cart after successful checkout
-      cart.forEach((item) => removeFromCart(item.id.toString()));
-      clearDates(); // Clear the selected dates
-      alert("Checkout successful!"); // Optionally notify the user of successful checkout
+  const handleCheckout = async () => {
+    if (!user) {
+      return;
     }
-  } catch (error) {
-    console.error("Checkout error:", error);
-  }
-};
 
+    try {
+      // Prepare the bookings with total_price, quantity, start_date, and end_date
+      const bookings = cart.map((item) => {
+        const quantity = item.quantity || 1;
+        const totalPrice = getTotalPrice(item, quantity); // Calculate total price for each item
+
+        return {
+          user_id: user?.id,
+          event_id: isAccommodation(item) ? null : item.id,
+          accommodation_id: isAccommodation(item) ? item.id : null,
+          booking_date: new Date().toISOString(),
+          start_date: selectedStartDate, // Add the selected start date
+          end_date: selectedEndDate, // Add the selected end date
+          total_price: totalPrice, // Add total price for this item
+          quantity: quantity, // Include quantity in the booking data
+        };
+      });
+
+      // Insert bookings into Supabase with total price, quantity, start_date, and end_date
+      const { error } = await supabase.from("bookings").insert(bookings);
+
+      if (error) {
+        console.error("Error adding bookings:", error.message);
+        setModalMessage("There was an error processing your payment.");
+        setIsModalOpen(true); // Open modal on error
+      } else {
+        // Clear the cart after successful checkout
+        cart.forEach((item) => removeFromCart(item.id.toString()));
+        clearDates(); // Clear the selected dates
+        setModalMessage("Checkout successful!");
+        setIsModalOpen(true); // Open modal on success
+      }
+    } catch (error) {
+      console.error("Checkout error:", error);
+      setModalMessage("There was an error processing your payment. Please try again.");
+      setIsModalOpen(true); // Open modal on error
+    }
+  };
 
   // Handle quantity change for events
   const handleQuantityChange = (item: Event, newQuantity: number) => {
@@ -211,6 +218,8 @@ const handleCheckout = async () => {
           Comfirm Payment
         </button>
       )}
+            <ComfirmPayment isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} message={modalMessage} />
+
     </div>
   );
 };

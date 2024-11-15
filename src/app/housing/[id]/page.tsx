@@ -59,7 +59,7 @@ const AccommodationDetail: React.FC = () => {
         } else {
           setAccommodation(data);
         }
-      } catch (err) {
+      } catch (err: unknown) {
         setError('Failed to load accommodation details');
       } finally {
         setLoading(false);
