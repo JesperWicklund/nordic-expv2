@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { supabase } from "../../../lib/supabaseClient";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext"; // Import the useCart hook
+import { useDateContext } from "@/context/DateContext"; // Import the clearDates function
 import { useRouter } from "next/navigation"; // Import the useRouter hook
 
 type User = {
@@ -61,6 +62,7 @@ export default function Profile() {
     await supabase.auth.signOut();
     setUser(null); // Reset user state on sign-out
     clearCart(); // Clear the cart on sign-out
+    useDateContext(); // Clear the date context on sign-out
     router.push("/"); // Redirect to the homepage
   };
 

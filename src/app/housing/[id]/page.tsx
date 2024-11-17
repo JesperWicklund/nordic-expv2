@@ -18,6 +18,8 @@ const AccommodationDetail: React.FC = () => {
   const [accommodation, setAccommodation] = useState<Accommodation | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showMessage, setShowMessage] = useState(false); // Track the display of the message
+  const [redirecting, setRedirecting] = useState(false); // To control the animation state
 
   useEffect(() => {
     if (!id) return;
@@ -51,9 +53,21 @@ const AccommodationDetail: React.FC = () => {
 
   const handleAddToCart = () => {
     if (!user) {
-      // Redirect the user to the sign-in page if they are not logged in
-      router.push("/signin");
-      return; // Exit the function after redirecting
+      // Show the message for 2 seconds and then redirect
+      console.log("User is not logged in, showing message...");
+      setShowMessage(true);
+      setRedirecting(false); // Ensure message starts visible
+
+      // Delay the redirect after the animation message
+      setTimeout(() => {
+        console.log("Redirecting to sign-in...");
+        setRedirecting(true); // Start fading out the message
+        setTimeout(() => {
+          router.push("/signin");
+        }, 1000); // Redirect after fade-out (1s)
+      }, 2000); // Wait 2 seconds before initiating fade-out
+
+      return; // Exit the function after showing message and redirecting
     }
 
     if (accommodation) {
@@ -150,6 +164,17 @@ const AccommodationDetail: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Show the message when the user is not logged in */}
+      {showMessage && (
+        <div
+          className={`fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-[#DE8022] text-white p-4 rounded-lg transition-opacity duration-1000 ${
+            redirecting ? "opacity-0" : "opacity-100"
+          }`}
+        >
+          <p>You must be logged in to book. Redirecting to sign-in...</p>
+        </div>
+      )}
     </div>
   );
 };

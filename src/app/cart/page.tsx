@@ -9,6 +9,7 @@ import PaymentForm from "@/components/PaymentForm";
 import ComfirmPayment from "@/components/ComfirmPayment";
 import { useState } from "react";
 import { format } from "date-fns";
+import DateSelector from "@/components/DateSelector";
 
 const isAccommodation = (item: Accommodation | Event): item is Accommodation =>
   "name" in item;
@@ -16,7 +17,7 @@ const isAccommodation = (item: Accommodation | Event): item is Accommodation =>
 const CartPage = () => {
   const { cart, removeFromCart, updateItemQuantity } = useCart();
   const { user } = useUser();
-  const { selectedStartDate, selectedEndDate, setSelectedStartDate, setSelectedEndDate, clearDates } = useDateContext();
+  const { selectedStartDate, selectedEndDate,  clearDates } = useDateContext();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -156,12 +157,9 @@ const CartPage = () => {
             <div className="mb-6 p-4 border border-gray-300 rounded-lg">
               <h3 className="text-xl font-semibold">Booking Dates</h3>
               <p>Please select your booking dates:</p>
-              <button
-                onClick={handleDateSelection}
-                className="px-4 py-2 bg-blue-500 text-white rounded mt-4"
-              >
-                Select Dates
-              </button>
+              <div>
+              <DateSelector />
+              </div>
             </div>
           ) : (
             <div className="mb-6 p-4 border border-gray-300 rounded-lg">
