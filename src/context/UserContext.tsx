@@ -1,10 +1,11 @@
 'use client';
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { supabase } from '../../lib/supabaseClient'; 
+import { supabase } from '../../lib/supabaseClient';
 import { User } from '@supabase/supabase-js';
 
 interface UserContextType {
   user: User | null;
+  loading: boolean;
   login: () => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -13,12 +14,14 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Check for an existing session on load
     const getSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setUser(session?.user || null);
+      setLoading(false); // Loading is complete
     };
 
     getSession(); // Call the async function
@@ -33,19 +36,17 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     };
   }, []);
 
-  // Define login and logout actions
   const login = async () => {
-    // This would redirect to Supabase's auth or show a login modal, for example
     await supabase.auth.signInWithOAuth({ provider: 'google' });
   };
 
   const logout = async () => {
     await supabase.auth.signOut();
-    setUser(null); // Clear the user state on logout
+    setUser(null);
   };
 
   return (
-    <UserContext.Provider value={{ user, login, logout }}>
+    <UserContext.Provider value={{ user, loading, login, logout }}>
       {children}
     </UserContext.Provider>
   );
