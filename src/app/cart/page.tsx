@@ -44,8 +44,8 @@ const CartPage = () => {
   };
 
   const totalCartPrice = cart.reduce((total, item) => {
-    const quantity = item.quantity || 1;
-    return total + getTotalPrice(item, quantity);
+    const quantity = item.quantity || 1;  // Get quantity for each item (default to 1 if not set)
+    return total + getTotalPrice(item, quantity);  // Sum total price for all items
   }, 0);
 
   const validateForm = () => {

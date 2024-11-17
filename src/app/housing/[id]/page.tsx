@@ -5,46 +5,20 @@ import { useParams } from "next/navigation";
 import { supabase } from "../../../../lib/supabaseClient";
 import { Accommodation } from "@/types/accommodation";
 import { useCart, CartItem } from "@/context/CartContext";
-import Link from "next/link";
+
 import Image from "next/image"; // For optimized image rendering
 import { useUser } from "@/context/UserContext";
 
 // Modal Component
-const Modal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
-        <h2 className="text-2xl font-bold mb-4">Item added to cart</h2>
-        <div className="flex flex-col gap-4">
-          <Link
-            href="/cart"
-            className="px-4 py-2 bg-[#DE8022] text-white rounded hover:bg-[#c46f1b] text-center"
-          >
-            Go to Cart
-          </Link>
-          <button
-            onClick={onClose}
-            className="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500"
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 const AccommodationDetail: React.FC = () => {
   const { id } = useParams();
-  const { addToCart } = useCart();
+  const { addToCart, cart, updateItemQuantity } = useCart(); // Ensure you're using the correct hooks from CartContext
   const user = useUser();
 
-  const [accommodation, setAccommodation] = useState<Accommodation | null>(
-    null
-  );
+  const [accommodation, setAccommodation] = useState<Accommodation | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showModal, setShowModal] = useState(false); // Modal visibility state
 
   useEffect(() => {
     if (!id) return;
@@ -81,17 +55,26 @@ const AccommodationDetail: React.FC = () => {
       console.error("User is not logged in. This action is not allowed.");
       return; // Exit the function early if the user is not logged in
     }
-  
+
     if (accommodation) {
-      const cartItem: CartItem = {
-        ...accommodation,
-        quantity: 1,
-        totalPrice: accommodation.price,
-        country: accommodation.country,
-      };
-  
-      addToCart(cartItem);
-      setShowModal(true);
+      // Check if the accommodation is already in the cart
+      const existingItem = cart.find((item) => item.id === accommodation.id);
+
+      if (existingItem) {
+        // If the item is already in the cart, just update the quantity
+        const updatedItem = { ...existingItem, quantity: existingItem.quantity + 1 };
+        updateItemQuantity(updatedItem.id.toString(), updatedItem.quantity); // Update the cart context
+      } else {
+        // If it's not in the cart, add it with quantity 1
+        const cartItem: CartItem = {
+          ...accommodation,
+          quantity: 1, // Initial quantity is 1
+          totalPrice: accommodation.price, // Price should be set correctly
+          country: accommodation.country,
+        };
+
+        addToCart(cartItem); // Add to cart
+      }
     }
   };
 
@@ -172,9 +155,6 @@ const AccommodationDetail: React.FC = () => {
               </button>
             </div>
           </div>
-
-          {/* Render the modal if showModal is true */}
-          {showModal && <Modal onClose={() => setShowModal(false)} />}
         </div>
       </div>
     </div>

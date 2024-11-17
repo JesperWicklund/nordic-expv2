@@ -46,12 +46,13 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (existingItemIndex !== -1) {
         // If item already exists, update the quantity and total price
         const updatedCart = [...prevCart];
-        updatedCart[existingItemIndex].quantity += item.quantity;
-        updatedCart[existingItemIndex].totalPrice += item.totalPrice;
+        const updatedItem = updatedCart[existingItemIndex];
+        updatedItem.quantity += item.quantity; // Increase quantity
+        updatedItem.totalPrice = updatedItem.quantity * Number(updatedItem.price); // Recalculate totalPrice with price as a number
         return updatedCart;
       } else {
         // If item doesn't exist, add it to the cart with quantity and total price
-        return [...prevCart, item];
+        return [...prevCart, { ...item, totalPrice: Number(item.price) * item.quantity }];
       }
     });
   };
@@ -69,7 +70,13 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const updateItemQuantity = (id: string, newQuantity: number) => {
     setCart((prevCart) =>
       prevCart.map((item) =>
-        item.id.toString() === id ? { ...item, quantity: newQuantity, totalPrice: item.totalPrice / item.quantity * newQuantity } : item
+        item.id.toString() === id
+          ? { 
+              ...item, 
+              quantity: newQuantity, 
+              totalPrice: Number(item.price) * newQuantity // Recalculate total price using price as a number
+            }
+          : item
       )
     );
   };
