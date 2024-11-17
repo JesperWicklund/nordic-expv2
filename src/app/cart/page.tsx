@@ -161,13 +161,7 @@ const CartPage = () => {
               <div key={item.id} className="m-4">
                 <div className="flex gap-2">
                   <div className="h-28">
-                    <Image
-                      width={500}
-                      height={500}
-                      src={item.images[0]}
-                      alt={isAccommodation(item) ? item.name : item.title}
-                      className="w-full h-full object-cover rounded-xl shadow-md"
-                    />
+                    
                   </div>
                   <div className="flex-1">
                     <h2 className="text-lg sm:text-xl font-semibold text-gray-800">

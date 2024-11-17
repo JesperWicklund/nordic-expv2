@@ -65,34 +65,40 @@ export default function Profile() {
   };
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-semibold text-gray-800 mb-4">Profile</h2>
+    <div className="max-w-lg mx-auto p-8 bg-white rounded-2xl shadow-lg border border-gray-200">
+      <h2 className="text-3xl font-semibold text-gray-800 mb-6 text-center">Profile</h2>
       {user ? (
         <>
-          <p className="text-gray-700 mb-4">
-            Welcome, <span className="font-bold">{user.name}</span>
+          <p className="text-lg text-gray-700 mb-6 text-center">
+            Welcome, <span className="font-bold text-blue-600">{user.name}</span>
           </p>
-          <Link href="/profile/userbookings">
-            <p className="text-blue-600 hover:text-blue-800 transition duration-300">
-              My Bookings
-            </p>
-          </Link>
+          <div className="flex justify-center mb-6">
+            <Link href="/profile/userbookings"   className="text-blue-600 hover:text-blue-800 font-medium transition duration-300">
+             
+                <p className="text-center">My Bookings</p>
+              
+            </Link>
+          </div>
           <button
             onClick={handleSignOut}
-            className="w-full bg-red-600 text-white font-semibold py-2 rounded-lg hover:bg-red-700 transition duration-300"
+            className="w-full bg-red-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-red-700 transition duration-300 transform hover:scale-105"
           >
             Sign Out
           </button>
         </>
       ) : (
         <>
-          <p className="text-gray-700 mb-4">You are not signed in.</p>
-          <Link
-            className="w-full bg-blue-600 text-white text-center py-2 px-2 rounded-lg hover:bg-blue-700 transition duration-300"
-            href="/signin"
-          >
-            Sign In
-          </Link>
+          <p className="text-lg text-gray-700 mb-6 text-center">
+            You are not signed in.
+          </p>
+          <div className="flex justify-center">
+            <Link
+              className="w-full bg-blue-600 text-white text-center py-3 px-4 rounded-lg hover:bg-blue-700 transition duration-300"
+              href="/signin"
+            >
+              Sign In
+            </Link>
+          </div>
         </>
       )}
     </div>

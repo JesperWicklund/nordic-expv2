@@ -17,24 +17,21 @@ type Booking = {
   booking_date: string;
   total_price: number;
   quantity: number;
-  start_date: string; // Add start date
-  end_date: string; // Add end date
+  start_date: string;
+  end_date: string;
 };
 
 type User = {
   id: string;
   email: string;
-  // name: string; // Remove the name property if it's not provided by Supabase
 };
 
 export default function UserBookings() {
   const [user, setUser] = useState<User | null>(null);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false); // Track modal state
-  const [selectedBookingId, setSelectedBookingId] = useState<number | null>(
-    null
-  ); // Track selected booking for deletion
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [selectedBookingId, setSelectedBookingId] = useState<number | null>(null);
 
   useEffect(() => {
     const getUserSession = async () => {
@@ -43,7 +40,6 @@ export default function UserBookings() {
         setUser({
           id: data.session.user.id,
           email: data.session.user.email || "",
-          // name: data.session.user.user_metadata.full_name, // Map the name if available
         });
         fetchUserBookings(data.session.user.id);
       }
@@ -55,7 +51,7 @@ export default function UserBookings() {
     setLoading(true);
     const { data: bookingsData, error: bookingsError } = await supabase
       .from("bookings")
-      .select("*, total_price, quantity, start_date, end_date") // Ensure to include `quantity`
+      .select("*, total_price, quantity, start_date, end_date")
       .eq("user_id", userId);
 
     if (bookingsError) {
@@ -66,7 +62,6 @@ export default function UserBookings() {
 
     const bookingsWithDetails = await Promise.all(
       bookingsData.map(async (booking: Booking) => {
-        // Fetch event details if it exists
         if (booking.event_id) {
           const { data: eventData, error: eventError } = await supabase
             .from("events")
@@ -75,14 +70,13 @@ export default function UserBookings() {
             .single();
 
           if (eventError) {
-            console.error("Error fetching event title and date:", eventError);
+            console.error("Error fetching event details:", eventError);
           } else {
             booking.event_title = eventData?.title;
             booking.event_date = eventData?.date;
           }
         }
 
-        // Fetch accommodation details if it exists
         if (booking.accommodation_id) {
           const { data: accommodationData, error: accommodationError } =
             await supabase
@@ -92,10 +86,7 @@ export default function UserBookings() {
               .single();
 
           if (accommodationError) {
-            console.error(
-              "Error fetching accommodation details:",
-              accommodationError
-            );
+            console.error("Error fetching accommodation details:", accommodationError);
           } else {
             booking.accommodation_name = accommodationData?.name;
             booking.accommodation_date = accommodationData?.date;
@@ -110,30 +101,31 @@ export default function UserBookings() {
     setLoading(false);
   };
 
-  const groupedBookings = bookings.reduce(
-    (
-      groups: { [key: string]: { event: Booking[]; accommodation: Booking[] } },
-      booking: Booking
-    ) => {
-      const date = booking.booking_date;
-      if (!groups[date]) {
-        groups[date] = { event: [], accommodation: [] };
-      }
+  const groupedBookings = bookings.reduce((groups: { [key: string]: { event: Booking[]; accommodation: Booking[] } }, booking: Booking) => {
+    const date = booking.booking_date;
+    if (!groups[date]) {
+      groups[date] = { event: [], accommodation: [] };
+    }
 
-      if (booking.event_title) {
-        groups[date].event.push(booking);
-      } else if (booking.accommodation_name) {
-        groups[date].accommodation.push(booking);
-      }
+    if (booking.event_title) {
+      groups[date].event.push(booking);
+    } else if (booking.accommodation_name) {
+      groups[date].accommodation.push(booking);
+    }
 
-      return groups;
-    },
-    {}
-  );
+    return groups;
+  }, {});
 
-  const deleteBooking = async (bookingId: number) => {
-    setSelectedBookingId(bookingId); // Set the selected booking ID
-    setIsModalOpen(true); // Open the modal
+  // Function to calculate total price for each group
+  const calculateGroupTotal = (group: { event: Booking[]; accommodation: Booking[] }) => {
+    const eventTotal = group.event.reduce((total, booking) => total + booking.total_price, 0);
+    const accommodationTotal = group.accommodation.reduce((total, booking) => total + booking.total_price, 0);
+    return eventTotal + accommodationTotal;
+  };
+
+  const deleteBooking = (bookingId: number) => {
+    setSelectedBookingId(bookingId);
+    setIsModalOpen(true);
   };
 
   const confirmDeleteBooking = async (bookingId: number) => {
@@ -146,60 +138,58 @@ export default function UserBookings() {
       console.error("Error deleting booking:", error);
     } else {
       setBookings(bookings.filter((booking) => booking.id !== bookingId));
-      setIsModalOpen(false); // Close the modal
+      setIsModalOpen(false);
     }
   };
 
   const cancelDeleteBooking = () => {
-    setIsModalOpen(false); // Close the modal without deleting
+    setIsModalOpen(false);
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className="text-center">Loading your bookings...</div>;
   }
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-semibold text-gray-800 mb-4">My Bookings</h2>
+    <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md">
+      <h2 className="text-3xl font-semibold text-gray-800 mb-6">My Bookings</h2>
       {user ? (
         <>
-          <p className="text-gray-700 mb-4">Upcoming</p>
           {Object.keys(groupedBookings).length > 0 ? (
-            <ul>
+            <div>
               {Object.entries(groupedBookings).map(([date, group]) => (
-                <li key={date} className="mb-6">
-                  <div className="text-gray-800 border-b-2">
-                    <h3 className="font-semibold text-lg mb-2">
-                      Booking made: {new Date(date).toLocaleDateString()}
+                <div key={date} className="mb-8">
+                  <div className="text-gray-800 border-b-2 pb-3">
+                    <h3 className="font-semibold text-lg mb-3">
+                      Bookings on {new Date(date).toLocaleDateString()}
                     </h3>
+                    {/* Display the total price right under the booking date */}
+                    <div className="font-semibold text-md text-gray-700 mb-4">
+                      Total Price: ${calculateGroupTotal(group).toFixed(2)}
+                    </div>
 
                     {group.event.length > 0 && (
                       <div>
-                        <h4 className="text-md font-semibold text-gray-700">
+                        <h4 className="text-md font-semibold text-gray-700 mb-2">
                           Events:
                         </h4>
                         {group.event.map((booking: Booking) => (
-                          <div key={booking.id} className="mb-2 text-gray-600">
-                            <div>Event: {booking.event_title}</div>
+                          <div
+                            key={booking.id}
+                            className="p-4 mb-4 bg-gray-50 border rounded-md shadow-sm"
+                          >
+                            <div className="font-semibold">{booking.event_title}</div>
                             <div>
-                              Start Date:{" "}
-                              {new Date(
-                                booking.start_date
-                              ).toLocaleDateString()}
-                            </div>{" "}
-                            {/* Display start date */}
-                            <div>
-                              End Date:{" "}
+                              Dates: {new Date(booking.start_date).toLocaleDateString()} to{" "}
                               {new Date(booking.end_date).toLocaleDateString()}
-                            </div>{" "}
-                            {/* Display end date */}
-                            <div>Attendees: {booking.quantity}</div>
+                            </div>
+                            <div className="text-sm">Attendees: {booking.quantity}</div>
                             <div className="text-sm">
                               Total Price: ${booking.total_price.toFixed(2)}
                             </div>
                             <button
-                              className="text-red-500 mt-2"
                               onClick={() => deleteBooking(booking.id)}
+                              className="text-red-500 mt-2 hover:text-red-700"
                             >
                               Remove Booking
                             </button>
@@ -210,32 +200,27 @@ export default function UserBookings() {
 
                     {group.accommodation.length > 0 && (
                       <div>
-                        <h4 className="text-md font-semibold text-gray-700">
+                        <h4 className="text-md font-semibold text-gray-700 mb-2">
                           Accommodations:
                         </h4>
                         {group.accommodation.map((booking: Booking) => (
-                          <div key={booking.id} className="mb-2 text-gray-600">
-                            <div>
-                              Accommodation: {booking.accommodation_name}
+                          <div
+                            key={booking.id}
+                            className="p-4 mb-4 bg-gray-50 border rounded-md shadow-sm"
+                          >
+                            <div className="font-semibold">
+                              {booking.accommodation_name}
                             </div>
                             <div>
-                              Start Date:{" "}
-                              {new Date(
-                                booking.start_date
-                              ).toLocaleDateString()}
-                            </div>{" "}
-                            {/* Display start date */}
-                            <div>
-                              End Date:{" "}
+                              Dates: {new Date(booking.start_date).toLocaleDateString()} to{" "}
                               {new Date(booking.end_date).toLocaleDateString()}
-                            </div>{" "}
-                            {/* Display end date */}
+                            </div>
                             <div className="text-sm">
                               Total Price: ${booking.total_price.toFixed(2)}
                             </div>
                             <button
-                              className="text-red-500 mt-2"
                               onClick={() => deleteBooking(booking.id)}
+                              className="text-red-500 mt-2 hover:text-red-700"
                             >
                               Remove Booking
                             </button>
@@ -244,9 +229,9 @@ export default function UserBookings() {
                       </div>
                     )}
                   </div>
-                </li>
+                </div>
               ))}
-            </ul>
+            </div>
           ) : (
             <p>No bookings found.</p>
           )}
@@ -254,6 +239,7 @@ export default function UserBookings() {
       ) : (
         <p>You need to be logged in to view your bookings.</p>
       )}
+
       <DeleteBookingModal
         isOpen={isModalOpen}
         onConfirm={confirmDeleteBooking}
