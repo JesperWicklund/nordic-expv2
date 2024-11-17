@@ -6,7 +6,6 @@ import { Accommodation } from "@/types/accommodation";
 import { Event } from "@/types/event";
 import { supabase } from "../../../lib/supabaseClient";
 import PaymentForm from "@/components/PaymentForm";
-import Image from "next/image";
 import ComfirmPayment from "@/components/ComfirmPayment";
 import { useState } from "react";
 import { format } from "date-fns";
@@ -17,7 +16,7 @@ const isAccommodation = (item: Accommodation | Event): item is Accommodation =>
 const CartPage = () => {
   const { cart, removeFromCart, updateItemQuantity } = useCart();
   const { user } = useUser();
-  const { selectedStartDate, selectedEndDate, clearDates } = useDateContext();
+  const { selectedStartDate, selectedEndDate, setSelectedStartDate, setSelectedEndDate, clearDates } = useDateContext();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -32,6 +31,7 @@ const CartPage = () => {
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
+  const [showDateSelector, setShowDateSelector] = useState(false); // State to control the date selector visibility
 
   const getTotalPrice = (item: Accommodation | Event, quantity: number): number => {
     if (isAccommodation(item)) {
@@ -91,6 +91,12 @@ const CartPage = () => {
       return;
     }
 
+    if (!selectedStartDate || !selectedEndDate) {
+      setModalMessage("Please select your booking dates before proceeding.");
+      setIsModalOpen(true);
+      return;
+    }
+
     try {
       const bookings = cart.map((item) => {
         const quantity = item.quantity || 1;
@@ -131,6 +137,10 @@ const CartPage = () => {
     updateItemQuantity(item.id.toString(), newQuantity);
   };
 
+  const handleDateSelection = () => {
+    setShowDateSelector(true);
+  };
+
   return (
     <div className="max-w-4xl mx-auto p-4 space-y-4 mb-20">
       <h1 className="text-3xl font-bold mb-4">Your Cart</h1>
@@ -141,7 +151,19 @@ const CartPage = () => {
         </div>
       ) : (
         <div>
-          {selectedStartDate && selectedEndDate && (
+          {/* Check if dates are selected */}
+          {!selectedStartDate || !selectedEndDate ? (
+            <div className="mb-6 p-4 border border-gray-300 rounded-lg">
+              <h3 className="text-xl font-semibold">Booking Dates</h3>
+              <p>Please select your booking dates:</p>
+              <button
+                onClick={handleDateSelection}
+                className="px-4 py-2 bg-blue-500 text-white rounded mt-4"
+              >
+                Select Dates
+              </button>
+            </div>
+          ) : (
             <div className="mb-6 p-4 border border-gray-300 rounded-lg">
               <h3 className="text-xl font-semibold">Booking Dates:</h3>
               <p>
@@ -161,7 +183,7 @@ const CartPage = () => {
               <div key={item.id} className="m-4">
                 <div className="flex gap-2">
                   <div className="h-28">
-                    
+                    {/* Image or icon can go here */}
                   </div>
                   <div className="flex-1">
                     <h2 className="text-lg sm:text-xl font-semibold text-gray-800">

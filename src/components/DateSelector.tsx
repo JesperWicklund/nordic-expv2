@@ -6,6 +6,8 @@ const DateSelector: React.FC = () => {
   const [startDate, setStartDate] = useState<string>(selectedStartDate); // Local state for start date
   const [endDate, setEndDate] = useState<string>(selectedEndDate); // Local state for end date
 
+  const today = new Date().toISOString().split("T")[0]; // Get today's date in the format "YYYY-MM-DD"
+
   const handleStartDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newStartDate = e.target.value;
     setStartDate(newStartDate);
@@ -31,6 +33,7 @@ const DateSelector: React.FC = () => {
             id="start-date"
             name="start-date"
             value={startDate}
+            min={today}  // Set the min attribute to today's date
             onChange={handleStartDateChange}
             className="block w-full border border-gray-900 rounded-xl p-2"
           />

@@ -5,16 +5,15 @@ import { useParams } from "next/navigation";
 import { supabase } from "../../../../lib/supabaseClient";
 import { Accommodation } from "@/types/accommodation";
 import { useCart, CartItem } from "@/context/CartContext";
-
 import Image from "next/image"; // For optimized image rendering
 import { useUser } from "@/context/UserContext";
-
-// Modal Component
+import { useRouter } from "next/navigation"; // Import useRouter for navigation
 
 const AccommodationDetail: React.FC = () => {
+  const { user } = useUser();
   const { id } = useParams();
   const { addToCart, cart, updateItemQuantity } = useCart(); // Ensure you're using the correct hooks from CartContext
-  const user = useUser();
+  const router = useRouter(); // Initialize the router
 
   const [accommodation, setAccommodation] = useState<Accommodation | null>(null);
   const [loading, setLoading] = useState(true);
@@ -52,59 +51,64 @@ const AccommodationDetail: React.FC = () => {
 
   const handleAddToCart = () => {
     if (!user) {
-      console.error("User is not logged in. This action is not allowed.");
-      return; // Exit the function early if the user is not logged in
+      // Redirect the user to the sign-in page if they are not logged in
+      router.push("/signin");
+      return; // Exit the function after redirecting
     }
 
     if (accommodation) {
-      // Check if the accommodation is already in the cart
       const existingItem = cart.find((item) => item.id === accommodation.id);
 
       if (existingItem) {
-        // If the item is already in the cart, just update the quantity
-        const updatedItem = { ...existingItem, quantity: existingItem.quantity + 1 };
-        updateItemQuantity(updatedItem.id.toString(), updatedItem.quantity); // Update the cart context
+        const updatedItem = {
+          ...existingItem,
+          quantity: existingItem.quantity + 1,
+        };
+        if (existingItem.quantity !== updatedItem.quantity) {
+          updateItemQuantity(updatedItem.id.toString(), updatedItem.quantity);
+        }
       } else {
-        // If it's not in the cart, add it with quantity 1
         const cartItem: CartItem = {
           ...accommodation,
-          quantity: 1, // Initial quantity is 1
-          totalPrice: accommodation.price, // Price should be set correctly
+          quantity: 1,
+          totalPrice: accommodation.price,
           country: accommodation.country,
         };
-
         addToCart(cartItem); // Add to cart
       }
     }
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
+  if (loading) return <div className="loading-spinner">Loading...</div>;
+  if (error) return <div className="error-message">Error: {error}</div>;
   if (!accommodation) return <div>No accommodation found</div>;
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="">
-        {/* Display the first image from the accommodation images */}
+      <div>
         <div className="w-full h-64 relative">
-          <Image
-            src={accommodation.images[0]} // Display the first image
-            alt={accommodation.name}
-            width={500}
-            height={300}
-            className="w-full h-full object-cover"
-          />
+          {accommodation.images && accommodation.images.length > 0 ? (
+            <Image
+              src={accommodation.images[0]} // Display the first image
+              alt={`Image of ${accommodation.name}`}
+              width={500}
+              height={300}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="bg-gray-300 w-full h-full flex justify-center items-center">
+              <span>No image available</span>
+            </div>
+          )}
         </div>
 
         <div className="p-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-xl font-bold ">{accommodation.name}</h1>
-              <div className="flex flex-col text-sm text-gray-500 ">
+              <h1 className="text-xl font-bold">{accommodation.name}</h1>
+              <div className="flex flex-col text-sm text-gray-500">
                 <div>
-                  <p>
-                    {accommodation.location}, {accommodation.city}
-                  </p>
+                  <p>{accommodation.location}, {accommodation.city}</p>
                 </div>
                 <div className="flex gap-2">
                   <span>Rooms: {accommodation.rooms}</span>
@@ -119,39 +123,28 @@ const AccommodationDetail: React.FC = () => {
               </p>
             </div>
           </div>
-          <div>
-            <div className="border-b-2">
-              <p className="text-gray-800 mb-6">{accommodation.description}</p>
-            </div>
-            <div className="mt-2">
-              <h2 className="font-bold">Host</h2>
-              <div className="p-1">
-                <p className="font-semibold text-lg text-[#DE8022]">
-                  {accommodation.host}
-                </p>
-              </div>
+
+          <div className="border-b-2">
+            <p className="text-gray-800 mb-6">{accommodation.description}</p>
+          </div>
+
+          <div className="mt-2">
+            <h2 className="font-bold">Host</h2>
+            <div className="p-1">
+              <p className="font-semibold text-lg text-[#DE8022]">{accommodation.host}</p>
             </div>
           </div>
 
-          <div className="flex justify-between items-center  w-full bg-[#FFF2E5] border-t border-gray-200 sm:hidden">
+          <div className="flex justify-between items-center w-full bg-[#FFF2E5] border-t border-gray-200">
             <div>
-              <p className="font-bold text-lg ml-6"> ${accommodation.price}</p>
+              <p className="font-bold text-lg ml-6">${accommodation.price}</p>
             </div>
             <div>
               <button
-                onClick={user ? handleAddToCart : undefined}
-                disabled={!user || loading} // Disable if loading or user is not logged in
-                className={`w-full sm:w-auto px-6 py-3 text-lg font-semibold text-white rounded-lg shadow-md transition-all duration-200 ${
-                  loading || !user
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-[#DE8022] hover:bg-[#c46f1b]"
-                }`}
+                onClick={handleAddToCart}
+                className="w-full sm:w-auto text-lg font-semibold text-white rounded-lg bg-[#DE8022]"
               >
-                {loading
-                  ? "Checking login status..."
-                  : user
-                  ? "Book"
-                  : "Log in to book"}
+                Book Now
               </button>
             </div>
           </div>
