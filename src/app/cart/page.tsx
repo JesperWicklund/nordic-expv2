@@ -32,7 +32,6 @@ const CartPage = () => {
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
-  const [showDateSelector, setShowDateSelector] = useState(false); // State to control the date selector visibility
 
   const getTotalPrice = (item: Accommodation | Event, quantity: number): number => {
     if (isAccommodation(item)) {
@@ -138,9 +137,7 @@ const CartPage = () => {
     updateItemQuantity(item.id.toString(), newQuantity);
   };
 
-  const handleDateSelection = () => {
-    setShowDateSelector(true);
-  };
+ 
 
   return (
     <div className="max-w-4xl mx-auto p-4 space-y-4 mb-20">
