@@ -115,7 +115,7 @@ const AccommodationDetail: React.FC = () => {
   if (!accommodation) return <div>No accommodation found</div>;
 
   return (
-    <div className="max-w-4xl bg-slate-100  mx-auto mb-24">
+    <div className="max-w-4xl bg-slate-50 rounded-lg  mx-auto mb-24">
       <div>
         <div className="w-full  ">
           {/* Layout for Large Screens: Main Image on the left, Thumbnails on the right */}
