@@ -6,14 +6,10 @@ import Tags from "@/components/Tags";
 import CountryDropdown from "@/components/mobile/CountryDropDown";
 import DateSelector from "@/components/DateSelector";
 
-
-
 export default function Home() {
   // State to track the selected category, country, and dates
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [selectedCountry, setSelectedCountry] = useState<string>("All");
- 
- 
 
   return (
     <div>
@@ -36,10 +32,12 @@ export default function Home() {
       </div>
 
       {/* Category Dropdown */}
-      <Tags
-        selectedCategory={selectedCategory}
-        setSelectedCategory={setSelectedCategory}
-      />
+      
+        <Tags
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+        />
+      
 
       {/* Pass selected country and dates to EventsList */}
       <div className="p-4">

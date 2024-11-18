@@ -1,5 +1,5 @@
-import React from 'react'
-import Link from 'next/link'
+import React from "react";
+import Link from "next/link";
 
 export default function Header() {
   return (
@@ -8,13 +8,16 @@ export default function Header() {
         <Link href="/" className="text-lg font-semibold">
           Home
         </Link>
-        <Link href="/about" className="text-lg font-semibold">
-          About
+        <Link href="/housing" className="text-lg font-semibold">
+          Housing
         </Link>
-        <Link href="/contact" className="text-lg font-semibold">
-          Contact
+        <Link href="/cart" className="text-lg font-semibold">
+          Cart
+        </Link>
+        <Link href="/profile" className="text-lg font-semibold">
+          Profile
         </Link>
       </div>
     </nav>
-  )
+  );
 }

@@ -50,7 +50,7 @@ const HousingPage: React.FC = () => {
       <h1 className="text-3xl font-bold mb-4">Available Apartments</h1>
       
       {/* Dropdown for country selection */}
-      <div className="w-full px-4 mb-4 flex flex-col">
+      <div className="w-full max-w-screen-lg px-4 mb-4 flex flex-col">
         <label htmlFor="country-select" className="mr-2 font-semibold">
           Filter by Country:
         </label>
@@ -75,6 +75,7 @@ const HousingPage: React.FC = () => {
       ) : filteredAccommodations.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full max-w-screen-lg">
           {filteredAccommodations.map((accommodation) => (
+            
             <AccommodationCard key={accommodation.id} accommodation={accommodation} />
           ))}
         </div>

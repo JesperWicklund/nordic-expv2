@@ -19,7 +19,7 @@ interface TagsProps {
 
 export default function Tags({ selectedCategory, setSelectedCategory }: TagsProps) {
   return (
-    <div className="p-4 mt-4 sm:flex sm:flex-wrap">
+    <div className="p-4 mt-4  sm:flex sm:flex-wrap">
       <div className="overflow-x-auto hide-scrollbar">
         <div className="whitespace-nowrap flex items-center sm:flex-wrap sm:gap-y-4 space-x-4  ">
           {categories.map((category, index) => (

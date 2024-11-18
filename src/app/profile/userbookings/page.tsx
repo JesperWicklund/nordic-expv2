@@ -19,6 +19,8 @@ type Booking = {
   quantity: number;
   start_date: string;
   end_date: string;
+  event_image: string;
+  accommodation_image: string;
 };
 
 type User = {
@@ -31,7 +33,9 @@ export default function UserBookings() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [selectedBookingId, setSelectedBookingId] = useState<number | null>(null);
+  const [selectedBookingId, setSelectedBookingId] = useState<number | null>(
+    null
+  );
 
   useEffect(() => {
     const getUserSession = async () => {
@@ -65,7 +69,7 @@ export default function UserBookings() {
         if (booking.event_id) {
           const { data: eventData, error: eventError } = await supabase
             .from("events")
-            .select("title, date")
+            .select("title, date, images")
             .eq("id", booking.event_id)
             .single();
 
@@ -74,6 +78,7 @@ export default function UserBookings() {
           } else {
             booking.event_title = eventData?.title;
             booking.event_date = eventData?.date;
+            booking.event_image = eventData?.images;
           }
         }
 
@@ -81,15 +86,19 @@ export default function UserBookings() {
           const { data: accommodationData, error: accommodationError } =
             await supabase
               .from("accommodations")
-              .select("name, date")
+              .select("name, date, images")
               .eq("id", booking.accommodation_id)
               .single();
 
           if (accommodationError) {
-            console.error("Error fetching accommodation details:", accommodationError);
+            console.error(
+              "Error fetching accommodation details:",
+              accommodationError
+            );
           } else {
             booking.accommodation_name = accommodationData?.name;
             booking.accommodation_date = accommodationData?.date;
+            booking.accommodation_image = accommodationData?.images;
           }
         }
 
@@ -101,25 +110,40 @@ export default function UserBookings() {
     setLoading(false);
   };
 
-  const groupedBookings = bookings.reduce((groups: { [key: string]: { event: Booking[]; accommodation: Booking[] } }, booking: Booking) => {
-    const date = booking.booking_date;
-    if (!groups[date]) {
-      groups[date] = { event: [], accommodation: [] };
-    }
+  const groupedBookings = bookings.reduce(
+    (
+      groups: { [key: string]: { event: Booking[]; accommodation: Booking[] } },
+      booking: Booking
+    ) => {
+      const date = booking.booking_date;
+      if (!groups[date]) {
+        groups[date] = { event: [], accommodation: [] };
+      }
 
-    if (booking.event_title) {
-      groups[date].event.push(booking);
-    } else if (booking.accommodation_name) {
-      groups[date].accommodation.push(booking);
-    }
+      if (booking.event_title) {
+        groups[date].event.push(booking);
+      } else if (booking.accommodation_name) {
+        groups[date].accommodation.push(booking);
+      }
 
-    return groups;
-  }, {});
+      return groups;
+    },
+    {}
+  );
 
   // Function to calculate total price for each group
-  const calculateGroupTotal = (group: { event: Booking[]; accommodation: Booking[] }) => {
-    const eventTotal = group.event.reduce((total, booking) => total + booking.total_price, 0);
-    const accommodationTotal = group.accommodation.reduce((total, booking) => total + booking.total_price, 0);
+  const calculateGroupTotal = (group: {
+    event: Booking[];
+    accommodation: Booking[];
+  }) => {
+    const eventTotal = group.event.reduce(
+      (total, booking) => total + booking.total_price,
+      0
+    );
+    const accommodationTotal = group.accommodation.reduce(
+      (total, booking) => total + booking.total_price,
+      0
+    );
     return eventTotal + accommodationTotal;
   };
 
@@ -178,12 +202,27 @@ export default function UserBookings() {
                             key={booking.id}
                             className="p-4 mb-4 bg-gray-50 border rounded-md shadow-sm"
                           >
-                            <div className="font-semibold">{booking.event_title}</div>
+                            {booking.event_image && (
+                              <img
+                                src={booking.event_image}
+                                alt={booking.event_title || "Event Image"}
+                                className="w-20 h-20 object-cover rounded"
+                              />
+                            )}
+                            <div className="font-semibold">
+                              {booking.event_title}
+                            </div>
                             <div>
-                              Dates: {new Date(booking.start_date).toLocaleDateString()} to{" "}
+                              Dates:{" "}
+                              {new Date(
+                                booking.start_date
+                              ).toLocaleDateString()}{" "}
+                              to{" "}
                               {new Date(booking.end_date).toLocaleDateString()}
                             </div>
-                            <div className="text-sm">Attendees: {booking.quantity}</div>
+                            <div className="text-sm">
+                              Attendees: {booking.quantity}
+                            </div>
                             <div className="text-sm">
                               Total Price: ${booking.total_price.toFixed(2)}
                             </div>
@@ -208,11 +247,25 @@ export default function UserBookings() {
                             key={booking.id}
                             className="p-4 mb-4 bg-gray-50 border rounded-md shadow-sm"
                           >
+                            {booking.accommodation_image && (
+                              <img
+                                src={booking.accommodation_image}
+                                alt={
+                                  booking.accommodation_name ||
+                                  "Accommodation Image"
+                                }
+                                className="w-20 h-20 object-cover rounded"
+                              />
+                            )}
                             <div className="font-semibold">
                               {booking.accommodation_name}
                             </div>
                             <div>
-                              Dates: {new Date(booking.start_date).toLocaleDateString()} to{" "}
+                              Dates:{" "}
+                              {new Date(
+                                booking.start_date
+                              ).toLocaleDateString()}{" "}
+                              to{" "}
                               {new Date(booking.end_date).toLocaleDateString()}
                             </div>
                             <div className="text-sm">
