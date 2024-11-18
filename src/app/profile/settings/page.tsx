@@ -73,7 +73,7 @@ export default function SettingsPage() {
   
   
   
-async function updatePassword(newPassword: string, currentPassword: string): Promise<boolean> {
+async function updatePassword(newPassword: string): Promise<boolean> {
   const { data: user, error } = await supabase.auth.getUser();
 
   if (!user) {
@@ -119,7 +119,7 @@ async function handleSubmit(event: FormEvent<HTMLFormElement>) {
   }
 
   if (formState.newPassword && formState.currentPassword) {
-    success = await updatePassword(formState.newPassword, formState.currentPassword);
+    success = await updatePassword(formState.newPassword);
   }
 
   if (success) {
