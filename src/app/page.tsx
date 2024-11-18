@@ -14,30 +14,31 @@ export default function Home() {
   return (
     <div>
       <Header />
-      <CountryDropdown
-        selectedCountry={selectedCountry}
-        setSelectedCountry={setSelectedCountry}
-      />
+      <div className="sm:max-w-4xl mx-auto">
+        <CountryDropdown
+          selectedCountry={selectedCountry}
+          setSelectedCountry={setSelectedCountry}
+        />
 
-      <DateSelector />
+        <DateSelector />
 
-      <div className="mt-8 flex flex-col justify-center items-center">
-        <div>
-          <h1 className="font-bold text-xl">Package</h1>
+        <div className="mt-8 flex flex-col justify-center items-center">
+          <div>
+            <h1 className="font-bold text-xl">Package</h1>
+          </div>
+          <div>
+            <p className="font-light">Ready to go travel packages</p>
+          </div>
+          <button className="text-[#DE8022] font-semibold">Learn more</button>
         </div>
-        <div>
-          <p className="font-light">Ready to go travel packages</p>
-        </div>
-        <button className="text-[#DE8022] font-semibold">Learn more</button>
-      </div>
 
-      {/* Category Dropdown */}
-      
+        {/* Category Dropdown */}
+
         <Tags
           selectedCategory={selectedCategory}
           setSelectedCategory={setSelectedCategory}
         />
-      
+      </div>
 
       {/* Pass selected country and dates to EventsList */}
       <div className="p-4">
