@@ -22,15 +22,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Head>
-          {/* Direct link to your PNG favicon in the public folder */}
-          <link rel="icon" href="/icons8-moose-50.png" type="image/png" />
-          <link
-            rel="shortcut icon"
-            href="/icons8-moose-50.png"
-            type="image/png"
-          />
-        </Head>
+       <Head>
+       <link rel="icon" href="/favicon.ico" />
+       </Head>
         <UserProvider>
           <CartProvider>
             <DateProvider>
