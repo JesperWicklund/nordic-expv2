@@ -9,7 +9,7 @@ import PaymentForm from "@/components/PaymentForm";
 import ComfirmPayment from "@/components/ComfirmPayment";
 import { useState } from "react";
 import { format } from "date-fns";
-import DateSelector from "@/components/DateSelector";
+
 
 const isAccommodation = (item: Accommodation | Event): item is Accommodation =>
   "name" in item;
