@@ -186,7 +186,7 @@ const CartPage = () => {
               >
                 <div className="flex gap-6 items-center">
                   {/* Image Section */}
-                  <div className=" rounded-lg overflow-hidden">
+                  <div className="w-36 h-24 overflow-hidden rounded-lg">
                     <Image
                       src={
                         isAccommodation(item) ? item.images[0] : item.images[0]
@@ -237,7 +237,7 @@ const CartPage = () => {
                   </div>
                 </div>
                 <p className="text-lg font-semibold text-gray-700">
-                  {totalPrice.toFixed(2)}
+                  ${totalPrice.toFixed(2)}
                 </p>
                 {/* Remove from Cart Button */}
                 <button

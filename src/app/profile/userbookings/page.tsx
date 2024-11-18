@@ -185,7 +185,7 @@ export default function UserBookings() {
                 <div key={date} className="mb-8">
                   <div className="text-gray-800 border-b-2 pb-3">
                     <h3 className="font-semibold text-lg mb-3">
-                      Bookings on {new Date(date).toLocaleDateString()}
+                      Booking made {new Date(date).toLocaleDateString()}
                     </h3>
                     {/* Display the total price right under the booking date */}
                     <div className="font-semibold text-md text-gray-700 mb-4">
@@ -209,10 +209,10 @@ export default function UserBookings() {
                                 className="w-20 h-20 object-cover rounded"
                               />
                             )}
-                            <div className="font-semibold">
+                            <div className="font-bold">
                               {booking.event_title}
                             </div>
-                            <div>
+                            <div className="font-semibold">
                               Dates:{" "}
                               {new Date(
                                 booking.start_date
@@ -257,10 +257,10 @@ export default function UserBookings() {
                                 className="w-20 h-20 object-cover rounded"
                               />
                             )}
-                            <div className="font-semibold">
+                            <div className="font-bold">
                               {booking.accommodation_name}
                             </div>
-                            <div>
+                            <div className="font-semibold">
                               Dates:{" "}
                               {new Date(
                                 booking.start_date
