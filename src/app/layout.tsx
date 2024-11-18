@@ -7,6 +7,7 @@ import { UserProvider } from "../context/UserContext";
 import Header from "@/components/desktop/Header";
 import { CartProvider } from "@/context/CartContext";
 import { DateProvider } from "@/context/DateContext";
+import Head from "next/head";
 
 export const metadata: Metadata = {
   title: "Nordic Experiences",
@@ -21,6 +22,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <Head>
+          {/* Direct link to your PNG favicon in the public folder */}
+          <link rel="icon" href="/icons8-moose-50.png" type="image/png" />
+          <link
+            rel="shortcut icon"
+            href="/icons8-moose-50.png"
+            type="image/png"
+          />
+        </Head>
         <UserProvider>
           <CartProvider>
             <DateProvider>
