@@ -3,8 +3,9 @@ import React, { useEffect, useState } from "react";
 import { supabase } from "../../../lib/supabaseClient";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
-import { useDateContext } from "@/context/DateContext"; // Import the hook
+import { useDateContext } from "@/context/DateContext";
 import { useRouter } from "next/navigation";
+import { FaSignOutAlt, FaUserCog, FaClipboardList } from "react-icons/fa"; // React icons for better UX
 
 type User = {
   email?: string;
@@ -67,13 +68,15 @@ export default function Profile() {
     await supabase.auth.signOut();
     setUser(null);
     clearCart();
-    clearDates(); 
+    clearDates();
     router.push("/");
   };
 
   return (
     <div className="max-w-lg mx-auto p-8 bg-white rounded-2xl shadow-lg border border-gray-200">
-      <h2 className="text-3xl font-semibold text-gray-800 mb-6 text-center">Profile</h2>
+      <h2 className="text-3xl font-semibold text-gray-800 mb-6 text-center">
+        Profile
+      </h2>
       {loading ? ( // Show loader while checking session
         <div className="flex justify-center items-center">
           <div className="loader"></div> {/* Custom loader here */}
@@ -83,30 +86,35 @@ export default function Profile() {
           <p className="text-lg text-gray-700 mb-6 text-center">
             Hello, <span className="font-bold text-blue-600">{user.name}</span>
           </p>
-          <div className="flex flex-col items-center mb-6">
+          <div className="flex flex-col items-center mb-6 space-y-4">
             <Link
               href="/profile/userbookings"
-              className="text-blue-600 hover:text-blue-800 font-medium transition duration-300"
+              className="flex items-center text-blue-600 hover:text-blue-800 font-medium transition duration-300"
             >
-              <p className="text-center">My Bookings</p>
+              <FaClipboardList className="mr-2" />
+              <span>My Bookings</span>
             </Link>
             <Link
               href="/profile/settings"
-              className="text-blue-600 hover:text-blue-800 font-medium transition duration-300"
+              className="flex items-center text-blue-600 hover:text-blue-800 font-medium transition duration-300"
             >
-              <p className="text-center">Settings</p>
+              <FaUserCog className="mr-2" />
+              <span>Settings</span>
             </Link>
           </div>
           <button
             onClick={handleSignOut}
-            className="w-full bg-red-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-red-700 transition duration-300 transform hover:scale-105"
+            className="w-full bg-gray-200 text-gray-800 font-medium py-3 px-4 rounded-lg hover:bg-gray-300 transition duration-300 flex items-center justify-center"
           >
+            <FaSignOutAlt className="mr-2 text-gray-600" />
             Sign Out
           </button>
         </>
       ) : (
         <>
-          <p className="text-lg text-gray-700 mb-6 text-center">You are not signed in.</p>
+          <p className="text-lg text-gray-700 mb-6 text-center">
+            You are not signed in.
+          </p>
           <div className="flex justify-center">
             <Link
               className="w-full bg-blue-600 text-white text-center py-3 px-4 rounded-lg hover:bg-blue-700 transition duration-300"
