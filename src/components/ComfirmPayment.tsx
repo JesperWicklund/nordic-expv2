@@ -5,9 +5,10 @@ interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   message: string;
+  isOrderFailed: boolean; // New prop to indicate if the order failed
 }
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, message }) => {
+const Modal: React.FC<ModalProps> = ({ isOpen, onClose, message, isOrderFailed }) => {
   const router = useRouter(); // Initialize the router
 
   // If the modal is not open, return null
@@ -24,7 +25,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, message }) => {
       <div className="bg-white p-6 rounded-xl w-96 h-96 shadow-lg space-y-4">
         {/* Modal Header */}
         <h2 className="text-2xl font-semibold text-center text-black">
-          Order Completed
+          {isOrderFailed ? "Order Failed" : "Order Completed"}
         </h2>
 
         {/* Modal Body */}
@@ -33,19 +34,19 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, message }) => {
           Your order number is: xxxxxxxxxx
         </p>
 
-        {/* Modal Button */}
-        <div className="flex justify-center">
-          <button
-            onClick={handleMyBookingsClick} // Use the handle function for redirection
-            className="px-6 py-2 bg-orange-500 text-white rounded-full hover:bg-orange-600 transition duration-200"
-          >
-            My Bookings
-          </button>
-        </div>
-        <div>
+        {/* Modal Buttons */}
+        <div className="flex flex-col gap-y-3 items-center justify-center">
+          {!isOrderFailed && (
+            <button
+              onClick={handleMyBookingsClick} // Use the handle function for redirection
+              className="px-6 py-2 bg-orange-500 text-white rounded-full hover:bg-orange-600 transition duration-200"
+            >
+              My Bookings
+            </button>
+          )}
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition duration-200"
+            className="px-4 py-2 text-gray-700 rounded transition duration-200"
           >
             Close
           </button>

@@ -128,7 +128,7 @@ const CartPage = () => {
 
       if (error) {
         console.error("Error adding bookings:", error.message);
-        setModalMessage("There was an error processing your payment.");
+        setModalMessage("There was an error processing your payment. You have to book minimum 1 night")
       } else {
         cart.forEach((item) => removeFromCart(item.id.toString()));
         clearDates();
@@ -287,6 +287,7 @@ const CartPage = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         message={modalMessage}
+        isOrderFailed={modalMessage.includes("error")}
       />
     </div>
   );

@@ -65,12 +65,34 @@ export default function Profile() {
   }, []);
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
-    clearCart();
-    clearDates();
-    router.push("/");
+    try {
+      // Show loading state (you could add a loading state for the button or screen)
+      setLoading(true);
+  
+      // Sign out using Supabase
+      await supabase.auth.signOut();
+  
+      // Clear cart and dates (make sure these functions are working properly)
+      clearCart();
+      clearDates();
+  
+      // Optionally, you could navigate the user after sign-out (to home or sign-in page)
+      router.push("/signin");
+  
+      // Clear user state
+      setUser(null);
+  
+    } catch (error) {
+      console.error("Sign out error:", error);
+      // Optionally, show an error message to the user
+      alert("An error occurred while signing out. Please try again.");
+  
+    } finally {
+      // Stop loading state after sign-out attempt
+      setLoading(false);
+    }
   };
+  
 
   return (
     <div className="max-w-lg mx-auto p-8 bg-white rounded-2xl shadow-lg border border-gray-200">
