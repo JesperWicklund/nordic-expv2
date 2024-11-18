@@ -14,12 +14,14 @@ type User = {
 
 export default function Profile() {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState<boolean>(true); // Add loading state
   const { clearCart } = useCart();
   const { clearDates } = useDateContext(); // Call the hook at the top level
   const router = useRouter();
 
   useEffect(() => {
     const getUserSession = async () => {
+      setLoading(true); // Start loading
       const { data } = await supabase.auth.getSession();
       const loggedInUser = data?.session?.user;
 
@@ -39,12 +41,15 @@ export default function Profile() {
       } else {
         setUser(null);
       }
+
+      setLoading(false); // Stop loading after session check
     };
 
     getUserSession();
 
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
+        setLoading(false); // Stop loading when session state changes
         if (session?.user) {
           setUser(session.user);
         } else {
@@ -69,17 +74,27 @@ export default function Profile() {
   return (
     <div className="max-w-lg mx-auto p-8 bg-white rounded-2xl shadow-lg border border-gray-200">
       <h2 className="text-3xl font-semibold text-gray-800 mb-6 text-center">Profile</h2>
-      {user ? (
+      {loading ? ( // Show loader while checking session
+        <div className="flex justify-center items-center">
+          <div className="loader"></div> {/* Custom loader here */}
+        </div>
+      ) : user ? (
         <>
           <p className="text-lg text-gray-700 mb-6 text-center">
-            Welcome, <span className="font-bold text-blue-600">{user.name}</span>
+            Hello, <span className="font-bold text-blue-600">{user.name}</span>
           </p>
-          <div className="flex justify-center mb-6">
+          <div className="flex flex-col items-center mb-6">
             <Link
               href="/profile/userbookings"
               className="text-blue-600 hover:text-blue-800 font-medium transition duration-300"
             >
               <p className="text-center">My Bookings</p>
+            </Link>
+            <Link
+              href="/profile/settings"
+              className="text-blue-600 hover:text-blue-800 font-medium transition duration-300"
+            >
+              <p className="text-center">Settings</p>
             </Link>
           </div>
           <button

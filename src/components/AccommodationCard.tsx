@@ -26,12 +26,13 @@ const AccommodationCard: React.FC<AccommodationCardProps> = ({
         </div>
         <div className="p-2">
           <div className="flex justify-between">
-            <div>
+            <div className="flex flex-col">
 
             <h2 className="text-lg font-bold ">{accommodation.name}</h2>
             <p>
               {accommodation.country}, {accommodation.city}
             </p>
+            <span className="text-slate-600 font-thin">Beds: {accommodation.beds} Rooms: {accommodation.rooms}</span>
             </div>
             <div>
               <p><span>&#9733;</span> {accommodation.rating} ({accommodation.nRatings})</p>

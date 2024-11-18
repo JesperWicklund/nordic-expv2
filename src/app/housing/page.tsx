@@ -50,7 +50,7 @@ const HousingPage: React.FC = () => {
       <h1 className="text-3xl font-bold mb-4">Available Apartments</h1>
       
       {/* Dropdown for country selection */}
-      <div className="mb-4">
+      <div className="w-full px-4 mb-4 flex flex-col">
         <label htmlFor="country-select" className="mr-2 font-semibold">
           Filter by Country:
         </label>

@@ -134,14 +134,14 @@ const EventDetail: React.FC = () => {
 
       <div className="mb-4">
         <h2 className="font-semibold text-lg mb-2">Highlights:</h2>
-        <div className="flex gap-4 mb-4">
-          <span className="px-4 py-2 bg-gray-200 rounded-full text-sm">
+        <div className="flex flex-wrap gap-4 mb-4">
+          <span className="px-4 py-2 bg-gray-200 rounded-full text-sm md:text-base">
             Guided tour
           </span>
-          <span className="px-4 py-2 bg-gray-200 rounded-full text-sm">
+          <span className="px-4 py-2 bg-gray-200 rounded-full text-sm md:text-base">
             Museum
           </span>
-          <span className="px-4 py-2 bg-gray-200 rounded-full text-sm">
+          <span className="px-4 py-2 bg-gray-200 rounded-full text-sm md:text-base">
             Monumental Sight
           </span>
         </div>
