@@ -28,7 +28,7 @@ export default function SettingsPage() {
   // Load user data on mount to set current name and email
   useEffect(() => {
     const fetchUserData = async () => {
-      const { data: userData, error: userError } = await supabase.auth.getUser();
+      const { data: userData} = await supabase.auth.getUser();
 
       if (userData?.user) {
         // Fetch user data from the 'users' table using the userId
