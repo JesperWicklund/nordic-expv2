@@ -201,7 +201,7 @@ export default function UserBookings() {
                     {group.accommodation.length > 0 && (
                       <div>
                         <h4 className="text-md font-semibold text-gray-700 mb-2">
-                          Accommodations:
+                          Apartment:
                         </h4>
                         {group.accommodation.map((booking: Booking) => (
                           <div

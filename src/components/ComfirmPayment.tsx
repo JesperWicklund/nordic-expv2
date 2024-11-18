@@ -23,11 +23,15 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, message }) => {
     <div className="fixed inset-0 flex items-center justify-center bg-gray-700 bg-opacity-20 z-50">
       <div className="bg-white p-6 rounded-xl w-96 h-96 shadow-lg space-y-4">
         {/* Modal Header */}
-        <h2 className="text-2xl font-semibold text-center text-black">Order Completed</h2>
+        <h2 className="text-2xl font-semibold text-center text-black">
+          Order Completed
+        </h2>
 
         {/* Modal Body */}
         <p className="text-center text-gray-700">{message}</p>
-        <p className="text-center font-bold text-gray-900">Your order number is: xxxxxxxxxx</p>
+        <p className="text-center font-bold text-gray-900">
+          Your order number is: xxxxxxxxxx
+        </p>
 
         {/* Modal Button */}
         <div className="flex justify-center">
@@ -36,6 +40,14 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, message }) => {
             className="px-6 py-2 bg-orange-500 text-white rounded-full hover:bg-orange-600 transition duration-200"
           >
             My Bookings
+          </button>
+        </div>
+        <div>
+          <button
+            onClick={onClose}
+            className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition duration-200"
+          >
+            Close
           </button>
         </div>
       </div>

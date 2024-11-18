@@ -62,7 +62,7 @@ export default function Profile() {
     await supabase.auth.signOut();
     setUser(null);
     clearCart();
-    clearDates(); // Now this is valid as it's called from the top-level of the component
+    clearDates(); 
     router.push("/");
   };
 

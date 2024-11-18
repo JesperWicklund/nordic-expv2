@@ -168,7 +168,7 @@ const AccommodationDetail: React.FC = () => {
       {/* Show the message when the user is not logged in */}
       {showMessage && (
         <div
-          className={`fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-[#DE8022] text-white p-4 rounded-lg transition-opacity duration-1000 ${
+          className={`fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-[#DE8022] text-white p-4 rounded-lg transition-opacity duration-500 ${
             redirecting ? "opacity-0" : "opacity-100"
           }`}
         >
