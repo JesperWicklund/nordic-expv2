@@ -5,24 +5,36 @@ import { useParams } from "next/navigation";
 import { supabase } from "../../../../lib/supabaseClient";
 import { Accommodation } from "@/types/accommodation";
 import { useCart, CartItem } from "@/context/CartContext";
-import Image from "next/image"; // For optimized image rendering
+import Image from "next/image";
 import { useUser } from "@/context/UserContext";
-import { useRouter } from "next/navigation"; // Import useRouter for navigation
+import { useRouter } from "next/navigation";
 
 const AccommodationDetail: React.FC = () => {
   const { user } = useUser();
   const { id } = useParams();
-  const { addToCart, cart, updateItemQuantity } = useCart(); // Ensure you're using the correct hooks from CartContext
-  const router = useRouter(); // Initialize the router
+  const { addToCart, cart, updateItemQuantity } = useCart();
+  const router = useRouter();
 
-  const [accommodation, setAccommodation] = useState<Accommodation | null>(
-    null
-  );
+  const [accommodation, setAccommodation] = useState<Accommodation | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showMessage, setShowMessage] = useState(false); // Track the display of the message
-  const [redirecting, setRedirecting] = useState(false); // To control the animation state
+  const [showMessage, setShowMessage] = useState(false);
+  const [redirecting, setRedirecting] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isLargeScreen, setIsLargeScreen] = useState(false); // Track if the screen is large
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsLargeScreen(window.innerWidth >= 1024); // Check if screen size is larger than or equal to 'lg'
+    };
+
+    handleResize(); // Set the initial screen size
+    window.addEventListener("resize", handleResize); // Add resize event listener
+
+    return () => {
+      window.removeEventListener("resize", handleResize); // Cleanup listener
+    };
+  }, []);
 
   useEffect(() => {
     if (!id) return;
@@ -56,21 +68,17 @@ const AccommodationDetail: React.FC = () => {
 
   const handleAddToCart = () => {
     if (!user) {
-      // Show the message for 2 seconds and then redirect
-      console.log("User is not logged in, showing message...");
       setShowMessage(true);
-      setRedirecting(false); // Ensure message starts visible
+      setRedirecting(false);
 
-      // Delay the redirect after the animation message
       setTimeout(() => {
-        console.log("Redirecting to sign-in...");
-        setRedirecting(true); // Start fading out the message
+        setRedirecting(true);
         setTimeout(() => {
-          router.push("/signin"); // Redirect after fade-out (1s)
-        }, 1000); // Redirect after the fade-out duration
-      }, 2000); // Wait 2 seconds before initiating fade-out
+          router.push("/signin");
+        }, 1000);
+      }, 2000);
 
-      return; // Exit the function after showing message and redirecting
+      return;
     }
 
     if (accommodation) {
@@ -91,24 +99,15 @@ const AccommodationDetail: React.FC = () => {
           totalPrice: accommodation.price,
           country: accommodation.country,
         };
-        addToCart(cartItem); // Add to cart
+        addToCart(cartItem);
       }
 
-      // Redirect to the cart page after adding to the cart
       router.push("/cart");
     }
   };
 
-  const handleImageClick = () => {
-    if (accommodation && accommodation.images) {
-      // Cycle to the next image
-      setCurrentImageIndex(
-        (prevIndex) => (prevIndex + 1) % accommodation.images.length
-      );
-    }
-  };
-  const handleDotClick = (index: number) => {
-    setCurrentImageIndex(index); 
+  const handleImageClick = (index: number) => {
+    setCurrentImageIndex(index); // Change the large image to the clicked thumbnail
   };
 
   if (loading) return <div className="loading-spinner">Loading...</div>;
@@ -116,31 +115,64 @@ const AccommodationDetail: React.FC = () => {
   if (!accommodation) return <div>No accommodation found</div>;
 
   return (
-    <div className="max-w-4xl mx-auto mb-24">
+    <div className="max-w-4xl bg-slate-100  mx-auto mb-24">
       <div>
-        <div className="w-full h-64 relative ">
+        <div className="w-full  ">
+          {/* Layout for Large Screens: Main Image on the left, Thumbnails on the right */}
           {accommodation.images && accommodation.images.length > 0 ? (
-            <Image
-              src={accommodation.images[currentImageIndex]} // Display the current image
-              alt={`Image of ${accommodation.name}`}
-              width={500}
-              height={300}
-              className="w-full h-full object-cover cursor-pointer" 
-              onClick={handleImageClick} 
-            />
+            isLargeScreen ? (
+              <div className="flex space-x-6">
+                {/* Large Image */}
+                <div className="flex-1">
+                  <Image
+                    src={accommodation.images[currentImageIndex]}
+                    alt={`Image of ${accommodation.name}`}
+                    width={800}
+                    height={500}
+                    className="w-full h-auto object-cover rounded-lg"
+                  />
+                </div>
+
+                {/* Thumbnails */}
+                <div className="flex flex-col space-y-4">
+                  {accommodation.images.map((image, index) => (
+                    <div key={index} onClick={() => handleImageClick(index)}>
+                      <Image
+                        src={image}
+                        alt={`Thumbnail ${index + 1}`}
+                        width={100}
+                        height={60}
+                        className="w-full h-auto object-cover cursor-pointer border-2 rounded-md"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              // Mobile or Small Screen: Display one image at a time
+              <Image
+                src={accommodation.images[currentImageIndex]}
+                alt={`Image of ${accommodation.name}`}
+                width={500}
+                height={300}
+                className="w-full h-full object-cover cursor-pointer"
+                onClick={() => handleImageClick((currentImageIndex + 1) % accommodation.images.length)}
+              />
+            )
           ) : (
             <div className="bg-gray-300 w-full h-full flex justify-center items-center">
               <span>No image available</span>
             </div>
           )}
         </div>
-        {/* Dot Indicator */}
-        {accommodation.images && accommodation.images.length > 1 && (
+
+        {/* Display on smaller screens: Thumbnails for image navigation */}
+        {!isLargeScreen && accommodation.images && accommodation.images.length > 1 && (
           <div className="flex justify-center mt-2">
             {accommodation.images.map((_, index) => (
               <div
                 key={index}
-                onClick={() => handleDotClick(index)}
+                onClick={() => handleImageClick(index)}
                 className={`w-2 h-2 mx-1 rounded-full cursor-pointer ${
                   index === currentImageIndex ? "bg-[#DE8022]" : "bg-gray-300"
                 }`}
@@ -198,7 +230,7 @@ const AccommodationDetail: React.FC = () => {
             <div className="w-2/4 sm:mt-0">
               <button
                 onClick={handleAddToCart}
-                className=" w-full px-4 py-2 sm:px-6 text-lg font-semibold text-white rounded-md bg-[#DE8022] "
+                className="w-full px-4 py-2 sm:px-6 text-lg font-semibold text-white rounded-md bg-[#DE8022]"
               >
                 Book
               </button>
