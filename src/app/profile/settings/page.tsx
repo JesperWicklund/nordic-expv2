@@ -1,19 +1,19 @@
 'use client';
-import React, { useState, FormEvent } from "react";
+import React, { useState, FormEvent, useEffect } from "react";
 import { supabase } from "../../../../lib/supabaseClient";
 
 // TypeScript interfaces for the form state and messages
-type SettingsFormState  = {
+type SettingsFormState = {
   newName: string;
   newEmail: string;
   newPassword: string;
   currentPassword: string;
-}
+};
 
 type FeedbackMessage = {
   message: string;
   type: "success" | "error";
-}
+};
 
 export default function SettingsPage() {
   const [formState, setFormState] = useState<SettingsFormState>({
@@ -24,6 +24,36 @@ export default function SettingsPage() {
   });
 
   const [feedback, setFeedback] = useState<FeedbackMessage | null>(null); // Success/Error feedback
+
+  // Load user data on mount to set current name and email
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const { data: userData, error: userError } = await supabase.auth.getUser();
+
+      if (userData?.user) {
+        // Fetch user data from the 'users' table using the userId
+        const { data: userProfile, error: profileError } = await supabase
+          .from('users')
+          .select('name')
+          .eq('id', userData.user.id)
+          .single(); // Assuming each user has only one row in 'users'
+
+        if (profileError) {
+          setFeedback({ message: "Error fetching user profile: " + profileError.message, type: "error" });
+        } else {
+          setFormState((prevState) => ({
+            ...prevState,
+            newName: userProfile?.name || "", // Set the name from the users table
+            newEmail: userData.user.email || "", // Set the email from Supabase Auth
+          }));
+        }
+      } else {
+        setFeedback({ message: "Failed to fetch user data.", type: "error" });
+      }
+    };
+
+    fetchUserData();
+  }, []); // Empty dependency array ensures this runs once on mount
 
   async function updateName(userId: string, newName: string): Promise<boolean> {
     const { error } = await supabase
@@ -41,93 +71,89 @@ export default function SettingsPage() {
 
   async function updateEmail(newEmail: string, currentPassword: string): Promise<boolean> {
     const { data, error: userError } = await supabase.auth.getUser();
-  
+
     if (!data || !data.user || userError) {
       setFeedback({ message: "User must be logged in to update email.", type: "error" });
       return false;
     }
-  
+
     // Check the current password by signing in with the existing credentials
     const { error: passwordError } = await supabase.auth.signInWithPassword({
       email: data.user.email!, // Use the current user's email to sign in
       password: currentPassword, // Validate with current password
     });
-  
+
     if (passwordError) {
       setFeedback({ message: "Current password is incorrect.", type: "error" });
       return false;
     }
-  
+
     // Now update the email
     const { error: updateError } = await supabase.auth.updateUser({
       email: newEmail, // Update the email
     });
-  
+
     if (updateError) {
       setFeedback({ message: "Error updating email: " + updateError.message, type: "error" });
       return false;
     }
-  
+
     return true;
   }
-  
-  
-  
-async function updatePassword(newPassword: string): Promise<boolean> {
-  const { data: user, error } = await supabase.auth.getUser();
 
-  if (!user) {
-    setFeedback({ message: "User must be logged in to update password.", type: "error" });
-    return false;
+  async function updatePassword(newPassword: string): Promise<boolean> {
+    const { data: user } = await supabase.auth.getUser();
+
+    if (!user) {
+      setFeedback({ message: "User must be logged in to update password.", type: "error" });
+      return false;
+    }
+
+    const { error: updateError } = await supabase.auth.updateUser({
+      password: newPassword, // Update the password
+    });
+
+    if (updateError) {
+      setFeedback({ message: "Error updating password: " + updateError.message, type: "error" });
+      return false;
+    }
+
+    return true;
   }
 
-  const { error: updateError } = await supabase.auth.updateUser({
-    password: newPassword, // Update the password
-  });
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setFeedback(null); // Reset previous feedback messages
 
-  if (updateError) {
-    setFeedback({ message: "Error updating password: " + updateError.message, type: "error" });
-    return false;
+    // Get the user with proper null checking
+    const { data} = await supabase.auth.getUser();
+
+    // Check if user is authenticated
+    if (!data || !data.user) {
+      setFeedback({ message: "User not logged in.", type: "error" });
+      return;
+    }
+
+    const userId = data.user.id; // Safely access the user id now
+
+    let success = true;
+
+    if (formState.newName) {
+      success = await updateName(userId, formState.newName);
+    }
+
+    if (formState.newEmail && formState.currentPassword) {
+      success = await updateEmail(formState.newEmail, formState.currentPassword);
+    }
+
+    if (formState.newPassword && formState.currentPassword) {
+      success = await updatePassword(formState.newPassword);
+    }
+
+    if (success) {
+      setFeedback({ message: "Settings updated successfully.", type: "success" });
+    }
   }
-
-  return true;
-}
-
-async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-  event.preventDefault();
-  setFeedback(null); // Reset previous feedback messages
-
-  // Get the user with proper null checking
-  const { data, error } = await supabase.auth.getUser();
-
-  // Check if user is authenticated
-  if (!data || !data.user) {
-    setFeedback({ message: "User not logged in.", type: "error" });
-    return;
-  }
-
-  const userId = data.user.id; // Safely access the user id now
-
-  let success = true;
-
-  if (formState.newName) {
-    success = await updateName(userId, formState.newName);
-  }
-
-  if (formState.newEmail && formState.currentPassword) {
-    success = await updateEmail(formState.newEmail, formState.currentPassword);
-  }
-
-  if (formState.newPassword && formState.currentPassword) {
-    success = await updatePassword(formState.newPassword);
-  }
-
-  if (success) {
-    setFeedback({ message: "Settings updated successfully.", type: "success" });
-    
-  }
-}
-
 
   function handleInputChange(event: React.ChangeEvent<HTMLInputElement>): void {
     const { name, value } = event.target;
