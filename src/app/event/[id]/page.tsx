@@ -162,44 +162,43 @@ const EventDetail: React.FC = () => {
       </div>
 
       {/* Ticket quantity controls */}
-      <div className="flex items-center  gap-4 mb-6">
-        <button
-          onClick={handleDecrease}
-          className="px-4 py-2 bg-gray-200 text-gray-700 font-semibold rounded-l-lg hover:bg-gray-300 focus:outline-none transition-all duration-200 ease-in-out"
-        >
-          -
-        </button>
-        <span className="px-6 py-2 text-xl font-semibold text-gray-800 bg-gray-100 rounded-md shadow-inner">
-          {ticketCount}
-        </span>
-        <button
-          onClick={handleIncrease}
-          className="px-4 py-2 bg-gray-200 text-gray-700 font-semibold rounded-r-lg hover:bg-gray-300 focus:outline-none transition-all duration-200 ease-in-out"
-        >
-          +
-        </button>
-        <p className="text-xl text-gray-800">
-          {event.price.toLowerCase() === "free"
-            ? "Free"
-            : `$${totalPrice.toFixed(2)}`}
-        </p>
-        {/* Book Button */}
-        {user ? (
-          <button
-            onClick={handleAddToCart}
-            className="w-full sm:w-auto px-6 py-3 text-lg font-semibold text-white bg-[#DE8022] rounded-lg shadow-md hover:bg-[#c46f1b] focus:outline-none transition-all duration-200 ease-in-out"
-          >
-            Book
-          </button>
-        ) : (
-          <Link
-            href="/signin"
-            className="w-full sm:w-auto px-6 py-3 text-lg font-semibold text-white bg-gray-400 rounded-lg shadow-md hover:bg-gray-500 focus:outline-none transition-all duration-200 ease-in-out text-center"
-          >
-            Log in to book
-          </Link>
-        )}
-      </div>
+      <div className="flex items-center gap-4 mb-6">
+  <button
+    onClick={handleDecrease}
+    className="px-4 py-2 bg-gray-200 text-gray-700 font-semibold rounded-l-lg hover:bg-gray-300 focus:outline-none transition-all duration-200 ease-in-out"
+  >
+    -
+  </button>
+  <span className="px-6 py-2 text-xl font-semibold text-gray-800 bg-gray-100 rounded-md shadow-inner">
+    {ticketCount}
+  </span>
+  <button
+    onClick={handleIncrease}
+    className="px-4 py-2 bg-gray-200 text-gray-700 font-semibold rounded-r-lg hover:bg-gray-300 focus:outline-none transition-all duration-200 ease-in-out"
+  >
+    +
+  </button>
+  
+  {/* Book Button with price in it */}
+  {user ? (
+    <button
+      onClick={handleAddToCart}
+      className="w-full sm:w-auto px-6 py-3 text-lg font-semibold text-white bg-[#DE8022] rounded-lg shadow-md hover:bg-[#c46f1b] focus:outline-none transition-all duration-200 ease-in-out"
+    >
+      {event.price.toLowerCase() === "free"
+        ? "Book - Free"
+        : `Book - $${totalPrice.toFixed(2)}`}
+    </button>
+  ) : (
+    <Link
+      href="/signin"
+      className="w-full sm:w-auto px-6 py-3 text-lg font-semibold text-white bg-gray-400 rounded-lg shadow-md hover:bg-gray-500 focus:outline-none transition-all duration-200 ease-in-out text-center"
+    >
+      Log in to book
+    </Link>
+  )}
+</div>
+
 
       {/* Render the modal if showModal is true */}
       {showModal && <Modal onClose={() => setShowModal(false)} />}

@@ -1,5 +1,4 @@
-"use client";
-
+'use client';
 import { createContext, useContext, useState, useEffect } from "react";
 
 type DateContextType = {
@@ -7,20 +6,20 @@ type DateContextType = {
   selectedEndDate: string;
   setSelectedStartDate: (date: string) => void;
   setSelectedEndDate: (date: string) => void;
-  clearDates: () => void;  // Include clearDates in the context type
+  clearDates: () => void;
 };
 
 const DateContext = createContext<DateContextType | undefined>(undefined);
 
 export const DateProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // States for start and end dates
-  const [selectedStartDate, setSelectedStartDate] = useState<string>("");
-  const [selectedEndDate, setSelectedEndDate] = useState<string>("");
+  const today = new Date().toISOString().split("T")[0]; // Get today's date in "YYYY-MM-DD"
+
+  const [selectedStartDate, setSelectedStartDate] = useState<string>(today); // Default to today's date
+  const [selectedEndDate, setSelectedEndDate] = useState<string>(today); // Default end date to start date
 
   // Load the dates from localStorage only on the client side
   useEffect(() => {
     if (typeof window !== "undefined") {
-      // Retrieve from localStorage only when running on the client side
       const storedStartDate = localStorage.getItem("startDate");
       const storedEndDate = localStorage.getItem("endDate");
 
@@ -47,10 +46,10 @@ export const DateProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Clear the dates from state and localStorage
   const clearDates = () => {
-    setSelectedStartDate(""); // Reset state
-    setSelectedEndDate("");   // Reset state
-    localStorage.removeItem("startDate"); // Clear start date from localStorage
-    localStorage.removeItem("endDate");   // Clear end date from localStorage
+    setSelectedStartDate(today); // Reset to today's date
+    setSelectedEndDate(today);   // Reset to today's date
+    localStorage.removeItem("startDate");
+    localStorage.removeItem("endDate");
   };
 
   return (

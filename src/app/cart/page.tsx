@@ -55,82 +55,93 @@ const CartPage = () => {
       phone: "",
       payment_method: "",
     };
-
+  
     let isValid = true;
-
+  
     if (!formData.name.trim()) {
       errors.name = "Please enter your name.";
       isValid = false;
     }
-    if (!formData.email.trim()) {
-      errors.email = "Please enter your email.";
+  
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!formData.email.trim() || !emailPattern.test(formData.email)) {
+      errors.email = "Please enter a valid email address.";
       isValid = false;
     }
+  
     if (!formData.phone.trim()) {
       errors.phone = "Please enter your phone number.";
       isValid = false;
     }
+  
     if (!formData.payment_method) {
       errors.payment_method = "Please select a payment method.";
       isValid = false;
     }
-
+  
     setFormErrors(errors);
     return isValid;
   };
+  
 
-  const handleCheckout = async () => {
-    if (!validateForm()) {
-      setIsModalOpen(false);  // Don't open modal if form is invalid
-      return;
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+const handleCheckout = async () => {
+  if (!validateForm()) return;
+
+  setIsSubmitting(true); // Disable the button while submitting
+
+  if (!user) {
+    setModalMessage("You must be logged in to proceed with checkout.");
+    setIsModalOpen(true);
+    setIsSubmitting(false);
+    return;
+  }
+
+  if (!selectedStartDate || !selectedEndDate) {
+    setModalMessage("Please select your booking dates before proceeding.");
+    setIsModalOpen(true);
+    setIsSubmitting(false);
+    return;
+  }
+
+  try {
+    const bookings = cart.map((item) => {
+      const quantity = item.quantity || 1;
+      const totalPrice = getTotalPrice(item, quantity);
+
+      return {
+        user_id: user?.id,
+        event_id: isAccommodation(item) ? null : item.id,
+        accommodation_id: isAccommodation(item) ? item.id : null,
+        booking_date: new Date().toISOString(),
+        start_date: selectedStartDate,
+        end_date: selectedEndDate,
+        total_price: totalPrice,
+        quantity: quantity,
+      };
+    });
+
+    const { error } = await supabase.from("bookings").insert(bookings);
+
+    if (error) {
+      console.error("Error adding bookings:", error.message);
+      setModalMessage("There was an error processing your payment.");
+    } else {
+      cart.forEach((item) => removeFromCart(item.id.toString()));
+      clearDates();
+      setModalMessage("Checkout successful!");
     }
+    setIsModalOpen(true);
+  } catch (error) {
+    console.error("Checkout error:", error);
+    setModalMessage("There was an error processing your payment. Please try again.");
+    setIsModalOpen(true);
+  }
 
-    if (!user) {
-      setModalMessage("You must be logged in to proceed with checkout.");
-      setIsModalOpen(true);
-      return;
-    }
+  setIsSubmitting(false); // Enable the button again
+};
 
-    if (!selectedStartDate || !selectedEndDate) {
-      setModalMessage("Please select your booking dates before proceeding.");
-      setIsModalOpen(true);
-      return;
-    }
-
-    try {
-      const bookings = cart.map((item) => {
-        const quantity = item.quantity || 1;
-        const totalPrice = getTotalPrice(item, quantity);
-
-        return {
-          user_id: user?.id,
-          event_id: isAccommodation(item) ? null : item.id,
-          accommodation_id: isAccommodation(item) ? item.id : null,
-          booking_date: new Date().toISOString(),
-          start_date: selectedStartDate,
-          end_date: selectedEndDate,
-          total_price: totalPrice,
-          quantity: quantity,
-        };
-      });
-
-      const { error } = await supabase.from("bookings").insert(bookings);
-
-      if (error) {
-        console.error("Error adding bookings:", error.message);
-        setModalMessage("There was an error processing your payment.");
-      } else {
-        cart.forEach((item) => removeFromCart(item.id.toString()));
-        clearDates();
-        setModalMessage("Checkout successful!");
-      }
-      setIsModalOpen(true);
-    } catch (error) {
-      console.error("Checkout error:", error);
-      setModalMessage("There was an error processing your payment. Please try again.");
-      setIsModalOpen(true);
-    }
-  };
 
   const handleQuantityChange = (item: Event, newQuantity: number) => {
     if (newQuantity < 1) return;
@@ -149,16 +160,7 @@ const CartPage = () => {
         </div>
       ) : (
         <div>
-          {/* Check if dates are selected */}
-          {!selectedStartDate || !selectedEndDate ? (
-            <div className="mb-6 p-4 border border-gray-300 rounded-lg">
-              <h3 className="text-xl font-semibold">Booking Dates</h3>
-              <p>Please select your booking dates:</p>
-              <div>
-              <DateSelector />
-              </div>
-            </div>
-          ) : (
+          
             <div className="mb-6 p-4 border border-gray-300 rounded-lg">
               <h3 className="text-xl font-semibold">Booking Dates:</h3>
               <p>
@@ -168,7 +170,7 @@ const CartPage = () => {
                 <strong>End Date:</strong> {format(new Date(selectedEndDate), "MMMM d, yyyy")}
               </p>
             </div>
-          )}
+       
 
           {cart.map((item) => {
             const quantity = item.quantity || 1;
@@ -242,11 +244,12 @@ const CartPage = () => {
 
       {cart.length > 0 && (
         <button
-          onClick={handleCheckout}
-          className="px-4 py-2 rounded text-white bg-[#DE8022] hover:bg-[#c46f1b] transition duration-200"
-        >
-          Confirm Payment
-        </button>
+        onClick={handleCheckout}
+        className="px-4 py-2 rounded text-white bg-[#DE8022] hover:bg-[#c46f1b] transition duration-200"
+        disabled={isSubmitting}
+      >
+        {isSubmitting ? "Processing..." : "Confirm Payment"}
+      </button>
       )}
 
       <ComfirmPayment

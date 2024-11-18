@@ -33,7 +33,7 @@ const DateSelector: React.FC = () => {
   useEffect(() => {
     // Sync the component state with the context state whenever the context changes
     if (selectedStartDate !== startDate) {
-      setStartDate(selectedStartDate || today);
+      setStartDate(selectedStartDate || today); // Ensure startDate is set to today if it's undefined in the context
     }
     if (selectedEndDate !== endDate) {
       setEndDate(selectedEndDate || startDate); // Update endDate if startDate changes
